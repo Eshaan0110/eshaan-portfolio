@@ -198,19 +198,25 @@ html {
 }
 
 :root {
-  --bg: #ffffff;
-  --text: #000000;
-  --border: #000000;
-  --primary: #66d9ef;
-  --secondary: #ffd93d;
-  --accent: #a8e6cf;
-  --pink: #ff6b9d;
+  --bg: #FAFAFA;
   --white: #FFFFFF;
-  --yellow: #ffd93d;
-  --cyan: #66d9ef;
+
+  --text: #042F2E;
+  --border: #042F2E;
+
+  --cyan: #2DD4BF;
+  --primary: #2DD4BF;
+
+  --yellow: #CCFBF1;
+  --secondary: #CCFBF1;
+
+  --accent: #99F6E4;
+  --pink: #FB7185;
+
   --shadow-offset: 4px;
   --border-width: 3px;
 }
+
 
 body[data-theme="dark"] {
   --bg: #1a1a1a;
