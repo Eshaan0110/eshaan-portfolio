@@ -198,24 +198,31 @@ html {
 }
 
 :root {
+  /* ===== BASE ===== */
   --bg: #FAFAFA;
   --white: #FFFFFF;
 
-  --text: #042F2E;
+  /* ===== TEXT & STRUCTURE ===== */
+  --text: #042F2E;        /* deep teal-black */
   --border: #042F2E;
 
-  --cyan: #2DD4BF;
+  /* ===== PRIMARY ACCENT ===== */
+  --cyan: #2DD4BF;        /* teal */
   --primary: #2DD4BF;
 
-  --yellow: #CCFBF1;
+  /* ===== SECONDARY (leaf green) ===== */
+  --yellow: #CCFBF1;      /* soft mint */
   --secondary: #CCFBF1;
 
+  /* ===== SUPPORT ===== */
   --accent: #99F6E4;
   --pink: #FB7185;
 
+  /* ===== UI METRICS (unchanged) ===== */
   --shadow-offset: 4px;
   --border-width: 3px;
 }
+
 
 
 body[data-theme="dark"] {
@@ -863,24 +870,16 @@ body[data-theme="dark"] .job-desc i {
 }
 
 .btn-cta {
-  display: inline-block;
-  padding: 1rem 2rem;
-  background: var(--cyan);
+  background: var(--primary);   /* teal */
   color: var(--text);
-  text-decoration: none;
-  font-weight: 700;
-  font-size: 1.1rem;
   border: var(--border-width) solid var(--border);
-  border-radius: 6px;
-  box-shadow: 4px 4px 0 0 var(--border);
-  transition: all 0.2s ease;
-  width: fit-content;
+  box-shadow: 4px 4px 0 var(--border);
 }
 
 .btn-cta:hover {
-  transform: translate(4px, 4px);
-  box-shadow: 0 0 0 var(--border);
+  background: var(--accent);    /* softer mint */
 }
+
 
 .coffee-cta-wrapper {
   display: grid;
