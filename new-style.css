@@ -413,7 +413,7 @@ body[data-theme="dark"] .paper-tear svg path[fill="#ffffff"] {
 }
 
 body[data-theme="dark"] .tape-sticker {
-  background: rgba(255, 217, 61, 0.6);
+  background: rgba(61, 255, 245, 0.6);
   border: 2px solid rgba(255, 255, 255, 0.1);
 }
 
@@ -998,7 +998,7 @@ body[data-theme="dark"] .job-desc i {
   right: 10%;
   width: 120px;
   height: 45px;
-  background: rgba(255, 217, 61, 0.7);
+  background: rgba(61, 255, 226, 0.7);
   border: 2px solid rgba(0, 0, 0, 0.1);
   border-radius: 2px;
   transform-origin: left center;
@@ -1090,7 +1090,7 @@ body[data-theme="dark"] .job-desc i {
   right: 40px;
   width: 100px;
   height: 40px;
-  background: rgba(255, 217, 61, 0.7);
+  background: rgba(81, 246, 232, 0.7);
   border: 2px solid rgba(0, 0, 0, 0.1);
   border-radius: 2px;
   transform: rotate(15deg);
@@ -2774,7 +2774,7 @@ body[data-theme="dark"] .map-popup-company span {
   right: 5px;
   width: 70px;
   height: 30px;
-  background: rgba(255, 217, 61, 0.7);
+  background: rgba(61, 255, 245, 0.7);
   border: 2px solid rgba(0, 0, 0, 0.1);
   border-radius: 2px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
@@ -2838,12 +2838,12 @@ body[data-theme="dark"] .map-popup-company span {
 }
 
 .contact-card:nth-child(2) {
-  background: #ffd93d;
+  background: #3dffd2;
   transform: rotate(1deg);
 }
 
 .contact-card:nth-child(3) {
-  background: #ff6b9d;
+  background: #fc99ba;
   transform: rotate(-1deg);
 }
 
@@ -2876,7 +2876,7 @@ body[data-theme="dark"] .contact-card:nth-child(1) {
 }
 
 body[data-theme="dark"] .contact-card:nth-child(2) {
-  background: #ffd93d;
+  background: #3dffef;
 }
 
 body[data-theme="dark"] .contact-card:nth-child(3) {
