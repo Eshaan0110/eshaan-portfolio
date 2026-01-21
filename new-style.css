@@ -3466,7 +3466,7 @@ body[data-theme="dark"] .language-item:hover {
 
 /* Dark mode for projects */
 body[data-theme="dark"] .creator-project {
-  background: #3a3a3a;
+  background: #121212;
 }
 
 body[data-theme="dark"] .nav-lazyfire {
