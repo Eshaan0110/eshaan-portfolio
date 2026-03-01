@@ -128,10 +128,6 @@
                 <div class="checkpoint-dot"></div>
                 <span class="checkpoint-label">Skills</span>
             </div>
-            <div class="checkpoint" data-section="projects">
-                <div class="checkpoint-dot"></div>
-                <span class="checkpoint-label">Projects</span>
-            </div>
             <div class="checkpoint" data-section="contact">
                 <div class="checkpoint-dot"></div>
                 <span class="checkpoint-label">Contact</span>
@@ -489,10 +485,8 @@
         <section class="section section-compact" id="projects">
             <h2 class="section-title">PROJECTS</h2>
             <div class="card" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1.5rem;">
-                <div>
-                    <p class="text" style="margin:0;">Check out my work in <span class="highlight highlight-cyan">Computer Vision</span>, <span class="highlight highlight-yellow">Robotics</span>, and Machine Learning — from gesture-controlled robotic arms to AUV perception systems.</p>
-                </div>
-                <a href="projects.html" style="font-family:'Space Mono',monospace;font-size:0.85rem;font-weight:700;padding:0.7rem 1.5rem;border:3px solid var(--border);background:var(--yellow);color:var(--text);text-decoration:none;box-shadow:5px 5px 0 var(--border);white-space:nowrap;display:inline-flex;align-items:center;gap:0.5rem;flex-shrink:0;">View All Projects <i class='fas fa-arrow-right'></i></a>
+                <p class="text" style="margin:0;flex:1;">Check out my work in <span class="highlight highlight-cyan">Computer Vision</span>, <span class="highlight highlight-yellow">Robotics</span>, and Machine Learning — from gesture-controlled robotic arms to AUV perception systems.</p>
+                <a href="projects.html" style="font-family:'Space Mono',monospace;font-size:.85rem;font-weight:700;padding:.7rem 1.5rem;border:3px solid var(--border);background:var(--yellow);color:var(--text);text-decoration:none;box-shadow:5px 5px 0 var(--border);white-space:nowrap;display:inline-flex;align-items:center;gap:.5rem;flex-shrink:0;">View All Projects <i class="fas fa-arrow-right"></i></a>
             </div>
         </section>
 
@@ -983,7 +977,7 @@
         const body = document.body;
         const icon = themeToggle.querySelector('i');
 
-        const currentTheme = localStorage.getItem('theme') || 'light';
+        const currentTheme = localStorage.getItem('theme') || 'dark';
         body.setAttribute('data-theme', currentTheme);
         updateIcon(currentTheme);
 
