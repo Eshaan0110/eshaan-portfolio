@@ -414,6 +414,15 @@ body[data-theme="dark"] .card {
   box-shadow: 8px 8px 0 rgba(232,234,240,0.3);
 }
 
+body[data-theme="dark"] .card .text {
+  color: #e8eaf0;
+  opacity: 1;
+}
+
+body[data-theme="dark"] .text {
+  color: #e8eaf0;
+}
+
 body[data-theme="dark"] .skill-box {
   background: #1a1d27;
   border-color: var(--border);
@@ -498,6 +507,12 @@ body[data-theme="dark"] .section-title {
   background: rgba(255,217,61,0.9);
   color: #0f1117;
   border-color: var(--border);
+}
+
+/* Any yellow/cyan bg button should have dark text in dark mode */
+body[data-theme="dark"] a[style*="background:var(--yellow)"],
+body[data-theme="dark"] a[style*="background: var(--yellow)"] {
+  color: #0f1117 !important;
 }
 
 body[data-theme="dark"] .section-title-center {
@@ -2541,6 +2556,11 @@ body[data-theme="dark"] .map-popup-company span {
 
 .highlight-green::before {
   background: var(--accent);
+}
+
+/* Dark mode: highlighted text should be dark so it's readable on bright bg */
+body[data-theme="dark"] .highlight {
+  color: #0f1117;
 }
 
 .timeline {
