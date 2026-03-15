@@ -65,15 +65,9 @@
     .loader-overlay{
       position:fixed;inset:0;background:var(--yellow);
       display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3rem;
-      z-index:99999;
-      animation:loaderDismiss .4s ease forwards;
-      animation-delay:1.4s;
+      z-index:99999;transition:opacity .3s,visibility .3s;
     }
-    .loader-overlay.hidden{opacity:0;visibility:hidden;pointer-events:none}
-    @keyframes loaderDismiss{
-      0%{opacity:1;visibility:visible}
-      100%{opacity:0;visibility:hidden;pointer-events:none}
-    }
+    .loader-overlay.hidden{opacity:0;visibility:hidden}
     .loader-shapes{position:absolute;inset:0;overflow:hidden;pointer-events:none}
     .ls{position:absolute;animation:ldeco 3s ease-in-out infinite}
     .ls-1{top:15%;left:10%}.ls-2{top:20%;right:15%;animation-delay:.5s}.ls-3{bottom:20%;left:15%;animation-delay:1s}
@@ -89,7 +83,7 @@
     .ll:nth-child(2){background:var(--pink);animation-delay:.2s}
     @keyframes llpop{to{opacity:1;transform:scale(1) rotate(0)}}
     .loader-bar{width:300px;height:20px;background:white;border:4px solid #000;box-shadow:6px 6px 0 #000;overflow:hidden;z-index:2}
-    .loader-fill{height:100%;background:#000;width:0;animation:lfill 1s ease-out .1s forwards}
+    .loader-fill{height:100%;background:#ffd93d;width:0;animation:lfill .8s ease-out .3s forwards}
     @keyframes lfill{to{width:100%}}
 
     /* Navbar */
@@ -265,7 +259,7 @@
     body[data-theme="dark"] .fsoc a:hover{background:rgba(102,217,239,.25)}
   </style>
 </head>
-<body data-theme="dark">
+<body>
 
   <!-- Loader -->
   <div class="loader-overlay">
@@ -306,7 +300,7 @@
         My <span class="hl">Projects</span>
         <span class="cnt-badge" id="cnt">6</span>
       </h1>
-      <p class="pg-sub">// Computer Vision &nbsp;·&nbsp; Robotics &nbsp;·&nbsp; ML &nbsp;·&nbsp; Data Engineering</p>
+      <p class="pg-sub">// Computer Vision &nbsp;·&nbsp; Robotics &nbsp;·&nbsp; Software Engineering</p>
     </div>
 
     <!-- Filters -->
@@ -316,107 +310,105 @@
       <button class="fbtn" data-f="robotics">Robotics</button>
       <button class="fbtn" data-f="ml">Machine Learning</button>
       <button class="fbtn" data-f="software">Software</button>
-      <button class="fbtn" data-f="data">Data Engineering</button>
     </div>
 
     <!-- Cards -->
     <div class="pgrid" id="pgrid">
 
-      <!-- 1: Featured — AUV Mira -->
+      <!-- 1: Featured -->
       <div class="pc ft" data-c="robotics computer-vision">
         <div class="pcband bc"></div>
         <div class="pcb">
           <div class="pci">
             <div class="pchead">
-              <div class="pcicon" style="background:var(--cyan)"><i class="fas fa-water"></i></div>
-              <span class="pcstatus slive">Active</span>
+              <div class="pcicon" style="background:var(--cyan)"><i class="fas fa-hand-paper"></i></div>
+              <span class="pcstatus sdone">Complete</span>
             </div>
-            <h3 class="pctitle">AUV Mira — Autonomous Underwater Vision</h3>
-            <p class="pcdesc">Underwater perception system for the Dreadnought Robotics AUV. Includes a full OpenCV pipeline with camera calibration, morphological transformations for noise reduction, and a colour-based pipeline detector for competition tasks. Also features a gate detection module (Gate.py) and ROS-ready C++ integration — deployed on the team's competition vehicle.</p>
+            <h3 class="pctitle">Project Mira</h3>
+            <p class="pcdesc">Developing underwater vision pipelines for the Dreadnought Robotics AUV. Includes object detection for competition tasks, camera calibration for underwater optics, and ROS integration for sensor fusion.</p>
             <div class="pctags">
-              <span class="ptag">Python</span><span class="ptag">C++</span><span class="ptag">OpenCV</span><span class="ptag">ROS</span><span class="ptag">Docker</span><span class="ptag">NumPy</span>
+              <span class="ptag">Python</span><span class="ptag">OpenCV</span><span class="ptag">ROS</span><span class="ptag">YOLO</span><span class="ptag">Numpy</span>
             </div>
             <div class="pclinks">
-              <a href="https://github.com/Eshaan0110/AUV-Mira" target="_blank" class="plink pr"><i class="fab fa-github"></i> View Code</a>
-              <a href="https://github.com/Dreadnought-Robotics/mira" target="_blank" class="plink"><i class="fab fa-github"></i> Team Repo</a>
+              <a href="https://github.com/Eshaan0110" target="_blank" class="plink pr"><i class="fab fa-github"></i> View Code</a>
             </div>
           </div>
-          <div class="pcv">🤿</div>
+          <div class="pcv">🦾</div>
         </div>
       </div>
 
-      <!-- 2 — Coratia Robotic Arm -->
+      <!-- 2 -->
       <div class="pc" data-c="robotics computer-vision">
         <div class="pcband by"></div>
         <div class="pcb">
           <div class="pchead">
-            <div class="pcicon" style="background:var(--yellow)"><i class="fas fa-hand-paper"></i></div>
-            <span class="pcstatus sdone">Complete</span>
+            <div class="pcicon" style="background:var(--yellow)"><i class="fas fa-water"></i></div>
+            <span class="pcstatus slive">Active</span>
           </div>
-          <h3 class="pctitle">3-DOF Gesture-Controlled Robotic Arm</h3>
-          <p class="pcdesc">Real-time hand-tracking system to control a 3-DOF robotic arm using hand gestures. Built end-to-end using MediaPipe for landmark detection, OpenCV for the vision pipeline, and PyFirmata for Arduino servo control. Includes dual-hand tracking and joint-angle mapping — validated in hardware at Coratia Technologies.</p>
-          <div class="pctags"><span class="ptag">MediaPipe</span><span class="ptag">PyFirmata</span><span class="ptag">OpenCV</span><span class="ptag">Python</span><span class="ptag">Arduino</span></div>
-          <div class="pclinks"><a href="https://github.com/Eshaan0110/Eshaan--Coratia-Technologies" target="_blank" class="plink pr"><i class="fab fa-github"></i> View Code</a></div>
+          <h3 class="pctitle">3 DOF Vision Based Robotic Arm  </h3>
+          <p class="pcdesc">Designed a real-time hand-tracking system to control a 3-DOF robotic arm using hand gestures. Built end-to-end using MediaPipe for landmark detection, OpenCV for the vision pipeline, and Python for servo control logic. Validated through hardware integration at Coratia Technologies.</p>
+          <div class="pctags"><span class="ptag">MediaPipe</span><span class="ptag">Pyfirmata</span><span class="ptag">OpenCV</span><span class="ptag">Python</span><span class="ptag">Arduino</span></div>
+          <div class="pclinks"><a href="https://github.com/Eshaan0110" target="_blank" class="plink pr"><i class="fab fa-github"></i> View Code</a></div>
         </div>
       </div>
 
-      <!-- 3 — Deep Learning Journey -->
+      <!-- 3 -->
+      <div class="pc" data-c="computer-vision ml">
+        <div class="pcband bg"></div>
+        <div class="pcb">
+          <div class="pchead">
+            <div class="pcicon" style="background:var(--green)"><i class="fas fa-eye"></i></div>
+            <span class="pcstatus sdone">Complete</span>
+          </div>
+          <h3 class="pctitle">Custom Object Detection Pipeline</h3>
+          <p class="pcdesc">Trained and deployed a custom YOLO model on a domain-specific dataset using Roboflow for annotation. Optimised inference speed for real-time usage on edge hardware.</p>
+          <div class="pctags"><span class="ptag">YOLO</span><span class="ptag">Roboflow</span><span class="ptag">PyTorch</span><span class="ptag">Python</span></div>
+          <div class="pclinks"><a href="https://github.com/Eshaan0110" target="_blank" class="plink pr"><i class="fab fa-github"></i> View Code</a></div>
+        </div>
+      </div>
+
+      <!-- 4 -->
       <div class="pc" data-c="ml">
         <div class="pcband bp"></div>
         <div class="pcb">
           <div class="pchead">
             <div class="pcicon" style="background:var(--pink)"><i class="fas fa-brain"></i></div>
-            <span class="pcstatus slive">Active</span>
-          </div>
-          <h3 class="pctitle">Deep Learning Journey</h3>
-          <p class="pcdesc">Structured learning repo documenting a ground-up deep learning curriculum — from NumPy fundamentals and neural networks from scratch to PyTorch tensor operations and model training. 46 commits of hands-on notebooks covering backprop, CNNs, and transfer learning.</p>
-          <div class="pctags"><span class="ptag">PyTorch</span><span class="ptag">NumPy</span><span class="ptag">CNN</span><span class="ptag">Python</span><span class="ptag">Jupyter</span></div>
-          <div class="pclinks"><a href="https://github.com/Eshaan0110/Deep-Learning-Journey" target="_blank" class="plink pr"><i class="fab fa-github"></i> View Code</a></div>
-        </div>
-      </div>
-
-      <!-- 4 — MPI Market Intelligence -->
-      <div class="pc" data-c="data ml software">
-        <div class="pcband bg"></div>
-        <div class="pcb">
-          <div class="pchead">
-            <div class="pcicon" style="background:var(--green)"><i class="fas fa-chart-line"></i></div>
             <span class="pcstatus sdone">Complete</span>
           </div>
-          <h3 class="pctitle">MPi — Market Intelligence Platform</h3>
-          <p class="pcdesc">RBI Payment Systems data ingestion and ML forecasting pipeline. Scrapes the RBI DBIE portal via Playwright, parses Excel data into Parquet, and runs Prophet time-series forecasting on credit and debit card volumes. Credit card model achieved 2.1% MAPE. Includes a production pipeline architecture design doc.</p>
-          <div class="pctags"><span class="ptag">Prophet</span><span class="ptag">Playwright</span><span class="ptag">Pandas</span><span class="ptag">Python</span><span class="ptag">Parquet</span></div>
-          <div class="pclinks"><a href="https://github.com/Eshaan0110/mpi-market-intelligence" target="_blank" class="plink pr"><i class="fab fa-github"></i> View Code</a></div>
+          <h3 class="pctitle">Deep Learning Image Classifier</h3>
+          <p class="pcdesc">Built and trained a CNN-based image classifier using PyTorch and TensorFlow. Experimented with transfer learning, data augmentation, and hyperparameter tuning on Google Colab.</p>
+          <div class="pctags"><span class="ptag">PyTorch</span><span class="ptag">TensorFlow</span><span class="ptag">CNN</span><span class="ptag">Transfer Learning</span></div>
+          <div class="pclinks"><a href="https://github.com/Eshaan0110" target="_blank" class="plink pr"><i class="fab fa-github"></i> View Code</a></div>
         </div>
       </div>
 
-      <!-- 5 — Agri Mitra (SIH) -->
-      <div class="pc" data-c="software ml">
+      <!-- 5 -->
+      <div class="pc" data-c="computer-vision">
         <div class="pcband bc"></div>
         <div class="pcb">
           <div class="pchead">
-            <div class="pcicon" style="background:var(--cyan)"><i class="fas fa-seedling"></i></div>
+            <div class="pcicon" style="background:var(--cyan)"><i class="fas fa-running"></i></div>
             <span class="pcstatus sdone">Complete</span>
           </div>
-          <h3 class="pctitle">Agri-Mitra — Smart India Hackathon</h3>
-          <p class="pcdesc">Agricultural intelligence platform built for Smart India Hackathon. A JavaScript-based web app providing farmers with crop recommendations, disease detection guidance, and market price data. Contributed to the computer vision and backend data pipeline components of the team project.</p>
-          <div class="pctags"><span class="ptag">JavaScript</span><span class="ptag">Web</span><span class="ptag">Computer Vision</span><span class="ptag">SIH</span></div>
-          <div class="pclinks"><a href="https://github.com/Eshaan0110/Agri-Mitra" target="_blank" class="plink pr"><i class="fab fa-github"></i> View Code</a></div>
+          <h3 class="pctitle">Real-Time Pose Estimation</h3>
+          <p class="pcdesc">Implemented a real-time human pose estimation system using MediaPipe Pose. Applied for exercise repetition counting and posture correction feedback using joint-angle calculations.</p>
+          <div class="pctags"><span class="ptag">MediaPipe</span><span class="ptag">OpenCV</span><span class="ptag">Python</span><span class="ptag">NumPy</span></div>
+          <div class="pclinks"><a href="https://github.com/Eshaan0110" target="_blank" class="plink pr"><i class="fab fa-github"></i> View Code</a></div>
         </div>
       </div>
 
-      <!-- 6 — Custom Object Detection -->
-      <div class="pc" data-c="computer-vision ml">
+      <!-- 6 -->
+      <div class="pc" data-c="software ml">
         <div class="pcband by"></div>
         <div class="pcb">
           <div class="pchead">
-            <div class="pcicon" style="background:var(--yellow)"><i class="fas fa-eye"></i></div>
-            <span class="pcstatus sdone">Complete</span>
+            <div class="pcicon" style="background:var(--yellow)"><i class="fas fa-chart-bar"></i></div>
+            <span class="pcstatus swip">In Progress</span>
           </div>
-          <h3 class="pctitle">Custom Object Detection Pipeline</h3>
-          <p class="pcdesc">Trained and deployed a custom YOLO model on a domain-specific dataset using Roboflow for annotation and labelling. Optimised inference for real-time performance on edge hardware — directly applied in the AUV Mira competition perception stack.</p>
-          <div class="pctags"><span class="ptag">YOLO</span><span class="ptag">Roboflow</span><span class="ptag">PyTorch</span><span class="ptag">OpenCV</span><span class="ptag">Python</span></div>
-          <div class="pclinks"><a href="https://github.com/Eshaan0110/AUV-Mira" target="_blank" class="plink pr"><i class="fab fa-github"></i> View Code</a></div>
+          <h3 class="pctitle">Sensor Data Analysis Dashboard</h3>
+          <p class="pcdesc">Building a data visualisation and analysis tool for processing sensor readings from robotics hardware. Uses Pandas for data wrangling and Matplotlib for charts — aimed at simplifying telemetry review.</p>
+          <div class="pctags"><span class="ptag">Python</span><span class="ptag">Pandas</span><span class="ptag">NumPy</span><span class="ptag">Matplotlib</span></div>
+          <div class="pclinks"><a href="https://github.com/Eshaan0110" target="_blank" class="plink pr"><i class="fab fa-github"></i> View Code</a></div>
         </div>
       </div>
 
@@ -440,28 +432,27 @@
         <div class="fsoc">
           <a href="https://github.com/Eshaan0110" target="_blank"><i class="fab fa-github"></i></a>
           <a href="https://www.linkedin.com/in/eshaan-adyanthaya-87a88a288/" target="_blank"><i class="fab fa-linkedin"></i></a>
-          <a href="/cdn-cgi/l/email-protection#b3d6c0dbd2d2dd9dd2d7cad2ddc7dbd2cad2f3d4ded2dadf9dd0dcde"><i class="fas fa-envelope"></i></a>
+          <a href="mailto:eshaan.adyanthaya@gmail.com"><i class="fas fa-envelope"></i></a>
         </div>
       </div>
     </footer>
 
   </div>
 
-  <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+  <script>
     // Loader
-    // loader dismissed via CSS animation
+    window.addEventListener('load', () => setTimeout(() => document.querySelector('.loader-overlay').classList.add('hidden'), 1000));
 
     // Theme — default dark
     const tbtn = document.getElementById('tbtn');
     const ti = tbtn.querySelector('i');
-    let saved = 'dark';
-    try { saved = localStorage.getItem('theme') || 'dark'; } catch(e) {}
+    const saved = localStorage.getItem('theme') || 'dark';
     document.body.setAttribute('data-theme', saved);
     setIcon(saved);
     tbtn.addEventListener('click', () => {
       const t = document.body.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
       document.body.setAttribute('data-theme', t);
-      try { localStorage.setItem('theme', t); } catch(e) {}
+      localStorage.setItem('theme', t);
       setIcon(t);
     });
     function setIcon(t) { ti.className = t === 'dark' ? 'fas fa-sun' : 'fas fa-moon'; }
@@ -488,7 +479,7 @@
       cards.forEach(c => {
         const ok = f === 'all' || (c.dataset.c || '').includes(f);
         c.classList.toggle('off', !ok);
-        if(ok) n++;
+        if (ok) n++;
       });
       cnt.textContent = n;
       nores.classList.toggle('show', n === 0);

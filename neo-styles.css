@@ -76,8 +76,8 @@ html {
   font-weight: 700;
   font-family: 'Space Grotesk', sans-serif;
   background: var(--white);
-  border: 6px solid var(--border);
-  box-shadow: 12px 12px 0 var(--border);
+  border: 6px solid var(--loader);
+  box-shadow: 12px 12px 0 var(--loader);
   width: 120px;
   height: 120px;
   display: flex;
@@ -198,9 +198,10 @@ html {
 }
 
 :root {
+  --loader: #0f0f0f;
   --bg: #ffffff;
   --text: #000000;
-  --border: #000000;
+  --border: oklch(0% 0 0);
   --primary: #66d9ef;
   --secondary: #ffd93d;
   --accent: #a8e6cf;
@@ -1876,7 +1877,7 @@ body[data-theme="dark"] .stat-number {
 .container {
   max-width: 100%;
   margin: 0;
-  padding: 2rem 3rem;
+  padding: 2rem 5rem;
 }
 
 .header {
@@ -2688,16 +2689,17 @@ body[data-theme="dark"] .highlight {
 .skills-grid-modern {
   display: grid;
   grid-template-columns: repeat(6, 1fr);
-  gap: 2rem;
+  gap: 1.25rem;
   max-width: 1600px;
-  margin: 0 auto;
+  margin: 0;
+  padding: 0;
 }
 
 .skill-box {
   background: var(--white);
-  border: 4px solid var(--border);
-  padding: 2rem;
-  box-shadow: 8px 8px 0 var(--border);
+  border: 3px solid var(--border);
+  padding: 1.25rem 1.5rem;
+  box-shadow: 6px 6px 0 var(--border);
   transition: all 0.3s ease;
   grid-column: span 2;
   position: relative;
@@ -2741,16 +2743,16 @@ body[data-theme="dark"] .highlight {
 .skill-box-header {
   display: flex;
   align-items: center;
-  gap: 1rem;
-  margin-bottom: 1.5rem;
-  padding-bottom: 1rem;
-  border-bottom: 4px solid var(--border);
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 3px solid var(--border);
   position: relative;
   z-index: 1;
 }
 
 .skill-icon-large {
-  font-size: 3rem;
+  font-size: 2rem;
   color: var(--primary);
   transition: all 0.3s ease;
 }
@@ -2771,7 +2773,7 @@ body[data-theme="dark"] .highlight {
 }
 
 .skill-box-title {
-  font-size: 1.5rem;
+  font-size: 1.1rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: -0.5px;
@@ -2780,7 +2782,7 @@ body[data-theme="dark"] .highlight {
 .skill-box .tech-tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.75rem;
+  gap: 0.5rem;
   position: relative;
   z-index: 1;
 }
@@ -2788,13 +2790,13 @@ body[data-theme="dark"] .highlight {
 .skill-box .tag {
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.65rem 1.15rem;
-  font-size: 0.875rem;
+  gap: 0.4rem;
+  padding: 0.4rem 0.75rem;
+  font-size: 0.78rem;
   font-weight: 600;
-  border: 3px solid var(--border);
+  border: 2px solid var(--border);
   background: var(--white);
-  box-shadow: 3px 3px 0 var(--border);
+  box-shadow: 2px 2px 0 var(--border);
   transition: all 0.2s ease;
   cursor: pointer;
   position: relative;
