@@ -1759,7 +1759,9 @@ body[data-theme="dark"] .stat-number {
   .journey-timeline {
     padding: 1rem;
     box-shadow: 3px 3px 0 var(--border);
-    height: 400px;    
+    height: auto;
+    min-height: unset;
+    overflow-y: visible;
   }
 
   .timeline-header {
@@ -1877,7 +1879,7 @@ body[data-theme="dark"] .stat-number {
 .container {
   max-width: 100%;
   margin: 0;
-  padding: 2rem 5rem;
+  padding: 2rem 3rem;
 }
 
 .header {
@@ -1985,6 +1987,7 @@ body[data-theme="dark"] .stat-number {
 
 .section {
   margin-bottom: 3rem;
+  padding: 0 1rem;
 }
 
 .section-title {
@@ -2022,6 +2025,7 @@ body[data-theme="dark"] .stat-number {
 
 .journey-container {
   margin: 0 auto;
+  width: 100%;
 }
 
 
@@ -2069,9 +2073,10 @@ body[data-theme="dark"] .stat-number {
   padding: 1.5rem;
   border: var(--border-width) solid var(--border);
   box-shadow: 8px 8px 0 var(--border);
-  height: 600px;
+  height: auto;
+  min-height: 300px;
   position: relative;
-  overflow-y: auto;
+  overflow-y: visible;
 }
 
 .journey-timeline-back {
@@ -3240,6 +3245,7 @@ body[data-theme="dark"] .footer-social-compact a:hover {
 /* Education & Languages Combined Section */
 .education-languages-section {
   margin-bottom: 3rem;
+  padding: 0 1rem;
 }
 
 .education-languages-grid {
@@ -3708,5 +3714,7 @@ body[data-theme="dark"] .nav-lazyfire {
   .journey-container {
     display: flex;
     justify-content: center;
+    max-width: 720px;
+    margin: 0 auto;
   }
 }
