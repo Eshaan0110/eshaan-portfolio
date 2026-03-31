@@ -510,7 +510,7 @@ body[data-theme="dark"] .section-title {
   border-color: var(--border);
 }
 
-/* Any yellow/cyan bg button should have dark text in dark mode */
+/* Any yellow/cyan bg button should have dark text in dark mode ( THE BUTTONS )*/
 body[data-theme="dark"] a[style*="background:var(--yellow)"],
 body[data-theme="dark"] a[style*="background: var(--yellow)"] {
   color: #0f1117 !important;
