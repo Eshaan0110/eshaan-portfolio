@@ -15,8 +15,8 @@
 
     /* match the existing 60px grid spacing */
     const GRID      = 60;
-    const INFLUENCE = 240;   /* radius of warp effect */
-    const STRENGTH  = 34;    /* max pixels a point gets pulled toward cursor */
+    const INFLUENCE = 150;   /* radius of warp effect */
+    const STRENGTH  = 25;    /* max pixels a point gets pulled toward cursor */
     const SEG       = 10;    /* segment length when discretising warped lines */
 
     function hexRGB(h) {
