@@ -1,7 +1,4 @@
-/* ═══════════════════════════════════════════════
-   CURSOR GRID — your grid lines BEND toward the cursor.
-   Replaces the dot-based spotlight with a gravitational-lens warp.
-   ═══════════════════════════════════════════════ */
+
 (function () {
     const canvas = document.getElementById('cursor-spotlight');
     if (!canvas) return;
