@@ -15,6 +15,7 @@
     <meta property="og:description" content="Computer Vision and Robotics engineer building intelligent systems across autonomous vehicles, robotic manipulation, and perception-driven software.">
     <link rel="canonical" href="https://eshaanadyanthaya.github.io">
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -23,6 +24,9 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+    <!-- CURSOR SPOTLIGHT — magnetic grid dots near cursor -->
+    <canvas id="cursor-spotlight" aria-hidden="true"></canvas>
+
     <!-- LOADER -->
     <div class="loader" id="loader">
         <div class="loader-ascii">
@@ -280,15 +284,42 @@
         </div>
     </section>
 
-    <!-- ════════════════ PROJECTS TEASER ════════════════ -->
+    <!-- ════════════════ PROJECT NETWORK ════════════════ -->
     <section class="section" id="projects">
         <div class="section-head rv">
             <span class="section-num">04</span>
-            <h2 class="section-title">Projects</h2>
+            <h2 class="section-title">Project Network</h2>
         </div>
-        <div class="projects-banner rv">
-            <p>Check out my work in <strong class="hl">Computer Vision</strong>, <strong class="hl-cyan">Robotics</strong>, and Machine Learning — from gesture-controlled robotic arms to AUV perception systems.</p>
-            <a href="projects.html" class="btn btn-lime">View All Projects <i class="fas fa-arrow-right" style="font-size:0.65rem"></i></a>
+        <div class="network-layout rv">
+            <div class="network-wrap">
+                <span class="network-corner tl"></span>
+                <span class="network-corner tr"></span>
+                <span class="network-corner bl"></span>
+                <span class="network-corner br"></span>
+                <div class="network-telemetry t-tl"><span class="blink"></span>ACTIVE · NETWORK_v1</div>
+                <div class="network-telemetry t-tr">13 NODES · 19 LINKS</div>
+                <canvas id="project-network"></canvas>
+                <div class="pn-tip">Drag · Hover · Click</div>
+                <div class="node-detail" id="node-detail">
+                    <div class="node-detail-kicker" id="node-kicker"></div>
+                    <div class="node-detail-title"  id="node-title"></div>
+                    <div class="node-detail-desc"   id="node-desc"></div>
+                    <div class="node-detail-cta"    id="node-cta">Open on GitHub →</div>
+                </div>
+            </div>
+            <aside class="network-aside">
+                <p class="network-aside-lead">Six projects. Seven technologies. <strong>The lines show which project uses which tech</strong> — drag a node to feel the connections.</p>
+                <div class="network-aside-stats">
+                    <div class="ns-stat"><span class="ns-num">06</span><span class="ns-lbl">Projects</span></div>
+                    <div class="ns-stat"><span class="ns-num">07</span><span class="ns-lbl">Tech</span></div>
+                    <div class="ns-stat"><span class="ns-num">19</span><span class="ns-lbl">Links</span></div>
+                </div>
+                <div class="network-aside-legend">
+                    <div class="leg-row"><span class="leg-dot leg-proj"></span><span>Filled circle = project</span></div>
+                    <div class="leg-row"><span class="leg-dot leg-tech"></span><span>Small square = tech</span></div>
+                </div>
+                <a href="projects.html" class="btn btn-lime">View all projects <i class="fas fa-arrow-right" style="font-size:0.65rem"></i></a>
+            </aside>
         </div>
     </section>
 
@@ -361,6 +392,10 @@
     <div class="cursor-dot" id="cursor-dot"></div>
     <div class="cursor-ring" id="cursor-ring"></div>
     <div class="cursor-glow" id="cursor-glow"></div>
+
+    <!-- Cursor spotlight + project network -->
+    <script src="cursor-spotlight.js"></script>
+    <script src="project-network.js"></script>
 
     <script>
         // Scroll to top on reload
