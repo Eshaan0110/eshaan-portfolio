@@ -3,559 +3,395 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Eshaan Adyanthaya | Computer Vision & Robotics Engineer</title>
+    <title>Eshaan Adyanthaya - Computer Vision & Robotics Engineer</title>
     <meta name="title" content="Eshaan Adyanthaya | Computer Vision, Robotics & Software Engineering">
-    <meta name="description" content="Computer Vision and Robotics engineer building intelligent systems at the intersection of perception, robotics, and software engineering.">
+    <meta name="description" content="Computer Vision and Robotics engineer building intelligent machines that perceive, reason, and interact with the physical world.">
     <meta name="keywords" content="Eshaan Adyanthaya, Computer Vision, Robotics, Software Engineer, Autonomous Systems, Machine Learning, Deep Learning, ROS, OpenCV, MediaPipe, Robotic Arms, AUV, Perception Systems">
     <meta name="author" content="Eshaan Adyanthaya">
     <meta name="robots" content="index, follow">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://eshaanadyanthaya.github.io">
-    <meta property="og:title" content="Eshaan Adyanthaya | Computer Vision & Robotics Engineer">
-    <meta property="og:description" content="Computer Vision and Robotics engineer building intelligent systems across autonomous vehicles, robotic manipulation, and perception-driven software.">
+    <meta property="og:title" content="Eshaan Adyanthaya — Computer Vision & Robotics Engineer">
+    <meta property="og:description" content="Building intelligent machines that perceive, reason, and interact with the physical world.">
+    <meta name="theme-color" content="#040405">
     <link rel="canonical" href="https://eshaanadyanthaya.github.io">
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <link rel="apple-touch-icon" href="apple-touch-icon.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600&family=Space+Mono:wght@400;700&family=Syne:wght@500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.16.0/devicon.min.css">
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="styles.css?v=8">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Person",
+      "name": "Eshaan Adyanthaya",
+      "email": "mailto:eshaan.adyanthaya@gmail.com",
+      "url": "https://eshaanadyanthaya.github.io",
+      "jobTitle": "Computer Vision & Robotics Engineer",
+      "alumniOf": "Vellore Institute of Technology, Chennai",
+      "knowsAbout": ["Computer Vision", "Robotics", "Machine Learning", "Autonomous Systems", "Software Engineering"],
+      "sameAs": [
+        "https://github.com/Eshaan0110",
+        "https://www.linkedin.com/in/eshaan-adyanthaya-87a88a288/"
+      ]
+    }
+    </script>
 </head>
 <body>
-    <!-- CURSOR SPOTLIGHT — magnetic grid dots near cursor -->
-    <canvas id="cursor-spotlight" aria-hidden="true"></canvas>
 
-    <!-- LOADER -->
-    <div class="loader" id="loader">
-        <div class="loader-ascii">
- ███████╗ █████╗ 
- ██╔════╝██╔══██╗
- █████╗  ███████║
- ██╔══╝  ██╔══██║
- ███████╗██║  ██║
- ╚══════╝╚═╝  ╚═╝</div>
-        <div class="loader-bar-track"><div class="loader-bar-fill"></div></div>
-        <div class="loader-status">initializing portfolio...</div>
-    </div>
+    <canvas id="field" aria-hidden="true"></canvas>
 
-    <!-- PROGRESS BAR -->
-    <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+    <a class="skip-link" href="#about">Skip to content</a>
 
     <!-- NAV -->
-    <nav class="nav" id="nav">
+    <nav class="nav" id="nav" aria-label="Primary">
         <div class="nav-inner">
-            <a href="#hero" class="nav-brand">EA://</a>
+            <a href="#top" class="nav-brand">EA<span class="brand-pulse" aria-hidden="true"></span></a>
             <div class="nav-links">
                 <a href="#about" class="nav-link">About</a>
-                <a href="#experience" class="nav-link">Journey</a>
-                <a href="#skills" class="nav-link">Skills</a>
                 <a href="projects.html" class="nav-link">Projects</a>
+                <a href="#research" class="nav-link">Research</a>
+                <a href="#experience" class="nav-link">Experience</a>
+                <a href="#skills" class="nav-link">Skills</a>
+                <a href="resume.html" class="nav-link">Resume</a>
                 <a href="#contact" class="nav-cta">Contact</a>
             </div>
         </div>
     </nav>
 
-    <div class="page-wrap">
+    <main id="top">
 
-    <!-- ════════════════ HERO ════════════════ -->
-    <section class="hero" id="hero">
+    <!-- ════════ HERO — the engineer ════════ -->
+    <header class="hero" id="hero">
         <div class="hero-grid">
-            <div>
-                <p class="hero-greeting" id="hero-greeting">Hi there! 👋</p>
-                <h1 class="hero-name">I'm <span class="em">Eshaan</span><br>Adyanthaya</h1>
-                <p class="hero-desc">
-                    I'm an engineering student focused on computer vision, robotics, and applied
-                    software engineering. I work on building intelligent systems for autonomous
-                    vehicles, robotic manipulation, and perception-driven control, with hands-on
-                    experience across real-world projects and technical leadership roles.
-                </p>
-                <div class="hero-actions">
-                    <a href="#contact" class="btn btn-lime">Let's Connect <i class="fas fa-arrow-right" style="font-size:0.65rem"></i></a>
-                    <a href="projects.html" class="btn btn-ghost">View Work</a>
+            <div class="hero-left">
+                <p class="hero-kicker mono rv">Computer Vision &amp; Robotics Engineer</p>
+                <h1 class="hero-name rv rv-d1"><span class="hn-line">ESHAAN</span><span class="hn-line">ADYANTHAYA</span></h1>
+                <p class="hero-tag rv rv-d2">Building intelligent machines that
+                    <span class="vital" data-v="1">perceive</span>,
+                    <span class="vital" data-v="2">reason</span>, and
+                    <span class="vital" data-v="3">interact</span>
+                    with the physical world.</p>
+                <div class="hero-fields mono rv rv-d3">
+                    <span>Computer Vision</span><span>Robotics</span><span>Autonomous Systems</span>
                 </div>
-                <div class="hero-social">
-                    <a href="https://github.com/Eshaan0110" target="_blank" class="social-link" title="GitHub"><i class="fab fa-github"></i></a>
-                    <a href="https://www.linkedin.com/in/eshaan-adyanthaya-87a88a288/" target="_blank" class="social-link" title="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
-                    <a href="mailto:eshaan.adyanthaya@gmail.com" class="social-link" title="Email"><i class="fas fa-envelope"></i></a>
+                <p class="hero-personal rv rv-d4">Driven by one question since the first line of code:
+                how do you teach a machine to understand the world it lives in?</p>
+                <div class="hero-actions rv rv-d5">
+                    <a href="#projects" class="btn btn-lime">Selected work</a>
+                    <a href="#contact" class="btn btn-ghost">Get in touch</a>
                 </div>
+                <p class="hero-status mono rv rv-d5"><span class="pulse-dot" aria-hidden="true"></span>Open to opportunities · Chennai, IN</p>
             </div>
-            <div class="hero-photo-wrap">
-                <div class="hero-photo-card">
-                    <div class="hero-photo-corner tl"></div><div class="hero-photo-corner tr"></div>
-                    <div class="hero-photo-corner bl"></div><div class="hero-photo-corner br"></div>
-                    <img src="image/WhatsApp Image 2026-01-16 at 11.55.42 PM.jpeg" alt="Eshaan Adyanthaya" width="300" height="380">
-                    <div class="hero-photo-label"><span class="pulse-dot"></span> Open to opportunities</div>
-                    <!-- Floating deco icons -->
-                    <div class="deco deco-code">
-                        <svg width="60" height="60" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <rect x="3" y="3" width="88" height="88" rx="0" fill="var(--cyan)" stroke="var(--border-bright)" stroke-width="2"/>
-                            <path d="M35 40 L20 50 L35 60" stroke="var(--bg)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
-                            <path d="M65 40 L80 50 L65 60" stroke="var(--bg)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
-                            <line x1="55" y1="35" x2="45" y2="65" stroke="var(--bg)" stroke-width="3.5" stroke-linecap="round"/>
-                        </svg>
-                    </div>
-                    <div class="deco deco-terminal">
-                        <svg width="60" height="60" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <rect x="3" y="3" width="88" height="88" rx="0" fill="var(--lime)" stroke="var(--border-bright)" stroke-width="2"/>
-                            <path d="M25 35 L40 50 L25 65" stroke="var(--bg)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
-                            <line x1="50" y1="65" x2="75" y2="65" stroke="var(--bg)" stroke-width="3.5" stroke-linecap="round"/>
-                        </svg>
-                    </div>
-                    <div class="deco deco-robot">
-                        <svg width="60" height="60" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <rect x="3" y="3" width="88" height="88" rx="0" fill="var(--magenta)" stroke="var(--border-bright)" stroke-width="2"/>
-                            <rect x="25" y="30" width="50" height="40" rx="0" fill="none" stroke="var(--bg)" stroke-width="3"/>
-                            <circle cx="38" cy="48" r="5" fill="var(--bg)"/>
-                            <circle cx="62" cy="48" r="5" fill="var(--bg)"/>
-                            <line x1="50" y1="20" x2="50" y2="30" stroke="var(--bg)" stroke-width="3" stroke-linecap="round"/>
-                            <circle cx="50" cy="17" r="4" fill="var(--bg)"/>
-                            <line x1="35" y1="58" x2="65" y2="58" stroke="var(--bg)" stroke-width="3" stroke-linecap="round"/>
-                        </svg>
-                    </div>
-                    <div class="deco-tag">Robotics</div>
+            <figure class="hero-right rv rv-d3">
+                <div class="portrait" id="portrait">
+                    <img id="portrait-img" src="image/WhatsApp Image 2026-01-16 at 11.55.42 PM.jpeg" alt="Eshaan Adyanthaya — portrait" width="440" height="540">
+                    <span class="portrait-grain" aria-hidden="true"></span>
                 </div>
-            </div>
+                <figcaption class="mono">fig. 00 — the engineer</figcaption>
+            </figure>
         </div>
-        <div class="tech-badges">
-            <span class="tech-badge"><i class="devicon-pytorch-original"></i> PyTorch</span>
-            <span class="tech-badge"><i class="devicon-tensorflow-original"></i> TensorFlow</span>
-            <span class="tech-badge"><i class="devicon-opencv-plain"></i> OpenCV</span>
-            <span class="tech-badge"><i class="fas fa-hand-sparkles"></i> MediaPipe</span>
-            <span class="tech-badge"><i class="fas fa-crosshairs"></i> YOLO</span>
-            <span class="tech-badge"><i class="devicon-python-plain"></i> Python</span>
-            <span class="tech-badge"><i class="devicon-numpy-original"></i> NumPy</span>
-            <span class="tech-badge"><i class="devicon-pandas-original"></i> Pandas</span>
-            <span class="tech-badge"><i class="fas fa-cogs"></i> ROS</span>
-            <span class="tech-badge"><i class="devicon-arduino-plain"></i> Arduino</span>
-            <span class="tech-badge"><i class="devicon-linux-plain"></i> Linux</span>
-            <span class="tech-badge"><i class="devicon-raspberrypi-original"></i> Raspberry Pi</span>
-            <span class="tech-badge"><i class="devicon-git-plain"></i> Git</span>
-            <span class="tech-badge"><i class="devicon-jupyter-plain"></i> Jupyter</span>
-            <span class="tech-badge"><i class="devicon-google-plain"></i> Google Colab</span>
-        </div>
-    </section>
+        <a href="#about" class="scroll-cue mono rv rv-d6" aria-label="Scroll to content">
+            <span>scroll</span>
+            <span class="cue-line" aria-hidden="true"></span>
+        </a>
+    </header>
 
-    <!-- ════════════════ ABOUT ════════════════ -->
-    <section class="section" id="about">
+    <!-- ════════ 01 · ABOUT ════════ -->
+    <section class="section" id="about" aria-labelledby="about-title">
         <div class="section-head rv">
-            <span class="section-num">01</span>
-            <h2 class="section-title">About</h2>
-        </div>
-        <div class="about-layout">
-            <div class="about-text rv rv-d1">
-                <p>I'm an engineering undergraduate with a strong focus on <strong class="hl">computer vision and robotics</strong>, actively working on real-world systems that combine perception, control, and software engineering. My experience spans building <strong>autonomous robotic systems</strong>, vision-based control pipelines, and applied machine learning solutions.</p>
-                <p>I have hands-on experience through <strong>robotics teams, internships, and technical leadership roles</strong>, where I've worked on projects involving robotic arms, autonomous vehicles, and real-time vision systems using modern tools and frameworks. I enjoy tackling problems that sit at the intersection of <strong class="hl-cyan">hardware and intelligent software</strong>.</p>
-                <p>Beyond technical work, I actively take up <strong>leadership and mentoring responsibilities</strong> through student organizations and clubs, focusing on building strong technical communities and encouraging hands-on learning. I'm driven by curiosity, continuous learning, and creating <strong class="hl">impactful engineering solutions</strong>.</p>
-            </div>
-            <div class="about-sidebar rv rv-d2">
-                <div class="stat-block"><div class="stat-val">6+</div><div class="stat-label">Projects Built</div></div>
-                <div class="stat-block"><div class="stat-val">2+</div><div class="stat-label">Leadership Roles</div></div>
-                <div class="stat-block"><div class="stat-val">5</div><div class="stat-label">Internship</div></div>
-                <div class="stat-block"><div class="stat-val">5</div><div class="stat-label">Languages Spoken</div></div>
-            </div>
-        </div>
-    </section>
-
-    <!-- ════════════════ JOURNEY (Tabbed) ════════════════ -->
-    <section class="section" id="experience">
-        <div class="section-head rv">
-            <span class="section-num">02</span>
-            <h2 class="section-title">Journey</h2>
-        </div>
-        <div class="tab-bar rv">
-            <button class="tab-btn active" data-tab="experience"><i class="fas fa-rocket"></i> Experience</button>
-            <button class="tab-btn" data-tab="leadership"><i class="fas fa-users"></i> Leadership</button>
+            <span class="section-num mono">01</span>
+            <h2 class="section-title" id="about-title">About</h2>
+            <p class="section-sub mono">one idea, evolving</p>
         </div>
 
-        <!-- Experience Tab -->
-        <div class="tab-panel active" id="tab-experience">
-            <div class="journey-grid rv">
-                <div class="journey-card">
-                    <div class="journey-card-accent" style="background:var(--lime)"></div>
-                    <div class="journey-card-top">
-                        <span class="exp-badge active">Current</span>
-                        <span class="journey-date-sm">Sep 2025 — Present</span>
+        <div class="origin-grid">
+            <!-- Evolution graph: one idea branching into a practice — now interactive -->
+            <figure class="evolution rv" aria-label="Interactive diagram: curiosity branching into programming, robotics, and the engineering disciplines that grew from it. Drag a node to explore.">
+                <div class="evo-wrap" id="evo-wrap">
+                    <canvas id="evo-net"></canvas>
+                    <div class="net-detail" id="net-detail" aria-hidden="true">
+                        <div class="net-kicker mono" id="net-kicker"></div>
+                        <div class="net-title" id="net-title"></div>
+                        <div class="net-desc" id="net-desc"></div>
                     </div>
-                    <h3 class="journey-card-role">Team Manager — AUV Division</h3>
-                    <p class="journey-card-org c-lime"><i class="fas fa-water"></i> Dreadnought Robotics</p>
-                    <p class="journey-card-desc">Leading a multidisciplinary AUV team. Overseeing vision pipelines, system integration, and competition readiness for international robotics challenges.</p>
-                    <div class="exp-tags"><span class="exp-tag">AUV</span><span class="exp-tag">Computer Vision</span><span class="exp-tag">ROS</span></div>
+                    <span class="net-hint mono" aria-hidden="true">drag · hover</span>
                 </div>
-                <div class="journey-card">
-                    <div class="journey-card-accent" style="background:var(--cyan)"></div>
-                    <div class="journey-card-top">
-                        <span class="exp-badge">Internship</span>
-                        <span class="journey-date-sm">May — Jun 2025</span>
-                    </div>
-                    <h3 class="journey-card-role">AI & Robotics Intern</h3>
-                    <p class="journey-card-org c-cyan"><i class="fas fa-robot"></i> Coratia Technologies</p>
-                    <p class="journey-card-desc">Built a CV-based gesture control system for a 3-DOF robotic arm. Real-time hand-tracking with OpenCV, MediaPipe, and hardware validation.</p>
-                    <div class="exp-tags"><span class="exp-tag">OpenCV</span><span class="exp-tag">MediaPipe</span><span class="exp-tag">Arduino</span></div>
-                </div>
-            </div>
-        </div>
+                <figcaption class="mono">fig. 01 — growth of a single idea · drag a node</figcaption>
+            </figure>
 
-        <!-- Leadership Tab -->
-        <div class="tab-panel" id="tab-leadership">
-            <div class="journey-grid rv">
-                <div class="journey-card">
-                    <div class="journey-card-accent" style="background:var(--magenta)"></div>
-                    <div class="journey-card-top">
-                        <span class="exp-badge active">Current</span>
-                        <span class="journey-date-sm">Apr 2025 — Present</span>
-                    </div>
-                    <h3 class="journey-card-role">President</h3>
-                    <p class="journey-card-org c-magenta"><i class="fab fa-microsoft"></i> Microsoft Innovations Club</p>
-                    <p class="journey-card-desc">Leading technical workshops, large-scale events, and mentoring students. Driving a project-oriented culture in software engineering and CV.</p>
-                    <div class="exp-tags"><span class="exp-tag">Workshops</span><span class="exp-tag">Events</span><span class="exp-tag">Mentoring</span></div>
-                </div>
-                <div class="journey-card">
-                    <div class="journey-card-accent" style="background:var(--lime)"></div>
-                    <div class="journey-card-top">
-                        <span class="exp-badge active">Current</span>
-                        <span class="journey-date-sm">Sep 2025 — Present</span>
-                    </div>
-                    <h3 class="journey-card-role">Team Manager</h3>
-                    <p class="journey-card-org c-lime"><i class="fas fa-water"></i> Dreadnought Robotics</p>
-                    <p class="journey-card-desc">Cross-functional coordination across software, electrical, and mechanical divisions. Recruitment, timelines, and AUV competition strategy with 20+ members.</p>
-                    <div class="exp-tags"><span class="exp-tag">Team Lead</span><span class="exp-tag">Strategy</span><span class="exp-tag">Recruitment</span></div>
-                </div>
+            <div class="origin-text">
+                <p class="rv">It started as curiosity about how machines could understand the world.
+                That curiosity became code, the code reached into hardware, and the hardware
+                learned to <strong class="hl">perceive</strong>.</p>
+                <p class="rv">Today I'm an engineering undergraduate focused on <strong class="hl">computer
+                vision and robotics</strong> — building real systems that combine perception, control,
+                and software engineering: autonomous underwater vehicles, vision-driven robotic arms,
+                and applied machine-learning pipelines, through robotics teams, internships, and
+                technical leadership roles.</p>
+                <p class="rv">The problems I chase sit at the seam between <strong class="hl">hardware
+                and intelligent software</strong> — and the same instinct extends to people: leading
+                teams, mentoring engineers, and building technical communities where systems thinking
+                spreads.</p>
+
+                <dl class="origin-stats rv">
+                    <div class="ostat"><dt class="mono">projects built</dt><dd>6+</dd></div>
+                    <div class="ostat"><dt class="mono">publications</dt><dd>2</dd></div>
+                    <div class="ostat"><dt class="mono">leadership roles</dt><dd>2</dd></div>
+                    <div class="ostat"><dt class="mono">languages spoken</dt><dd>5</dd></div>
+                </dl>
             </div>
         </div>
     </section>
 
-    <!-- ════════════════ SKILLS ════════════════ -->
-    <section class="section" id="skills">
+    <!-- ════════ 02 · SELECTED WORK ════════ -->
+    <section class="section" id="projects" aria-labelledby="projects-title">
         <div class="section-head rv">
-            <span class="section-num">03</span>
-            <h2 class="section-title">Skills</h2>
+            <span class="section-num mono">02</span>
+            <h2 class="section-title" id="projects-title">Selected Work</h2>
+            <p class="section-sub mono">an exhibition — hover a project to preview it</p>
         </div>
-        <div class="skills-grid rv">
-            <div class="skill-cell"><div class="skill-icon ic-lime"><i class="fas fa-eye"></i></div><div class="skill-name">Computer Vision & ML</div><div class="skill-tags">
-                <span class="skill-tag"><i class="devicon-pytorch-original"></i> PyTorch</span>
-                <span class="skill-tag"><i class="devicon-tensorflow-original"></i> TensorFlow</span>
-                <span class="skill-tag"><i class="devicon-opencv-plain"></i> OpenCV</span>
-                <span class="skill-tag"><i class="fas fa-hand-sparkles"></i> MediaPipe</span>
-                <span class="skill-tag"><i class="fas fa-crosshairs"></i> YOLO</span>
-                <span class="skill-tag"><i class="fas fa-vector-square"></i> Roboflow</span>
-            </div></div>
-            <div class="skill-cell"><div class="skill-icon ic-cyan"><i class="fas fa-robot"></i></div><div class="skill-name">Robotics</div><div class="skill-tags">
-                <span class="skill-tag"><i class="fas fa-cogs"></i> ROS</span>
-                <span class="skill-tag"><i class="devicon-arduino-plain"></i> Arduino</span>
-                <span class="skill-tag"><i class="devicon-raspberrypi-original"></i> Raspberry Pi</span>
-                <span class="skill-tag"><i class="fas fa-water"></i> AUV Systems</span>
-                <span class="skill-tag"><i class="fas fa-hand-paper"></i> Gesture Control</span>
-            </div></div>
-            <div class="skill-cell"><div class="skill-icon ic-magenta"><i class="fas fa-code"></i></div><div class="skill-name">Languages</div><div class="skill-tags">
-                <span class="skill-tag"><i class="devicon-python-plain"></i> Python</span>
-                <span class="skill-tag"><i class="devicon-c-plain"></i> C</span>
-                <span class="skill-tag"><i class="devicon-cplusplus-plain"></i> C++</span>
-                <span class="skill-tag"><i class="devicon-java-plain"></i> Java</span>
-                <span class="skill-tag"><i class="devicon-bash-plain"></i> Bash</span>
-                <span class="skill-tag"><i class="devicon-arduino-plain"></i> Arduino</span>
-                <span class="skill-tag"><i class="devicon-matlab-plain"></i> MATLAB</span>
-                <span class="skill-tag"><i class="devicon-azuresqldatabase-plain"></i> SQL</span>
-            </div></div>
-            <div class="skill-cell"><div class="skill-icon ic-orange"><i class="fas fa-chart-line"></i></div><div class="skill-name">Data & ML Tools</div><div class="skill-tags">
-                <span class="skill-tag"><i class="devicon-numpy-original"></i> NumPy</span>
-                <span class="skill-tag"><i class="devicon-pandas-original"></i> Pandas</span>
-                <span class="skill-tag"><i class="devicon-jupyter-plain"></i> Jupyter</span>
-                <span class="skill-tag"><i class="devicon-google-plain"></i> Google Colab</span>
-            </div></div>
-            <div class="skill-cell"><div class="skill-icon ic-blue"><i class="fas fa-database"></i></div><div class="skill-name">Databases</div><div class="skill-tags">
-                <span class="skill-tag"><i class="devicon-mysql-original"></i> MySQL</span>
-                <span class="skill-tag"><i class="devicon-sqlite-plain"></i> SQLite</span>
-            </div></div>
-            <div class="skill-cell"><div class="skill-icon ic-text"><i class="fas fa-tools"></i></div><div class="skill-name">Tools & Platforms</div><div class="skill-tags">
-                <span class="skill-tag"><i class="devicon-git-plain"></i> Git</span>
-                <span class="skill-tag"><i class="devicon-vscode-plain"></i> VS Code</span>
-                <span class="skill-tag"><i class="devicon-pycharm-plain"></i> PyCharm</span>
-                <span class="skill-tag"><i class="devicon-linux-plain"></i> Linux</span>
-            </div></div>
-            <div class="skill-cell"><div class="skill-icon ic-cyan"><i class="fas fa-users"></i></div><div class="skill-name">Soft Skills</div><div class="skill-tags">
-                <span class="skill-tag"><i class="fas fa-user-tie"></i> Leadership</span>
-                <span class="skill-tag"><i class="fas fa-calendar-check"></i> Event Management</span>
-                <span class="skill-tag"><i class="fas fa-random"></i> Adaptability</span>
-                <span class="skill-tag"><i class="fas fa-comments"></i> Communication</span>
-                <span class="skill-tag"><i class="fas fa-brain"></i> Analytical Thinking</span>
-            </div></div>
+
+        <div class="sw-layout rv">
+            <div class="sw-list" id="sw-list" role="tablist" aria-label="Featured projects"></div>
+            <div class="sw-preview">
+                <div class="sw-stage-wrap" id="sw-stage-wrap">
+                    <img class="ex-photo" id="sw-photo" src="image/auv.jpeg" alt="" hidden>
+                    <video class="ex-video" id="sw-video" src="image/robarm.mp4" loop muted playsinline preload="metadata" aria-label="Gesture-controlled robotic arm tracking a human hand in real time" hidden></video>
+                    <svg class="ex-stage" id="sw-stage" viewBox="0 0 800 560" preserveAspectRatio="xMidYMid slice" aria-hidden="true"></svg>
+                    <span class="ex-index mono" id="sw-index"></span>
+                </div>
+                <div class="sw-meta">
+                    <p class="sw-challenge"><span class="mono sw-ch-label">challenge —</span> <span id="sw-challenge"></span></p>
+                    <a class="ex-link mono" id="sw-case" href="projects.html">read the case study ↗</a>
+                </div>
+            </div>
         </div>
+
+        <a class="sw-archive rv mono" href="projects.html">→ Explore the complete engineering archive</a>
     </section>
 
-    <!-- ════════════════ PROJECT NETWORK ════════════════ -->
-    <section class="section" id="projects">
+    <!-- ════════ 03 · RESEARCH ════════ -->
+    <section class="section" id="research" aria-labelledby="research-title">
         <div class="section-head rv">
-            <span class="section-num">04</span>
-            <h2 class="section-title">Project Network</h2>
+            <span class="section-num mono">03</span>
+            <h2 class="section-title" id="research-title">Research</h2>
+            <p class="section-sub mono">two peer-reviewed publications, 2025</p>
         </div>
-        <div class="network-layout rv">
-            <div class="network-wrap">
-                <span class="network-corner tl"></span>
-                <span class="network-corner tr"></span>
-                <span class="network-corner bl"></span>
-                <span class="network-corner br"></span>
-                <div class="network-telemetry t-tl"><span class="blink"></span>ACTIVE · NETWORK_v1</div>
-                <div class="network-telemetry t-tr">13 NODES · 19 LINKS</div>
-                <canvas id="project-network"></canvas>
-                <div class="pn-tip">Drag · Hover · Click</div>
-                <div class="node-detail" id="node-detail">
-                    <div class="node-detail-kicker" id="node-kicker"></div>
-                    <div class="node-detail-title"  id="node-title"></div>
-                    <div class="node-detail-desc"   id="node-desc"></div>
-                    <div class="node-detail-cta"    id="node-cta">Open on GitHub →</div>
-                </div>
-            </div>
-            <aside class="network-aside">
-                <p class="network-aside-lead">Six projects. Seven technologies. <strong>The lines show which project uses which tech</strong> — drag a node to feel the connections.</p>
-                <div class="network-aside-stats">
-                    <div class="ns-stat"><span class="ns-num">06</span><span class="ns-lbl">Projects</span></div>
-                    <div class="ns-stat"><span class="ns-num">07</span><span class="ns-lbl">Tech</span></div>
-                    <div class="ns-stat"><span class="ns-num">19</span><span class="ns-lbl">Links</span></div>
-                </div>
-                <div class="network-aside-legend">
-                    <div class="leg-row"><span class="leg-dot leg-proj"></span><span>Filled circle = project</span></div>
-                    <div class="leg-row"><span class="leg-dot leg-tech"></span><span>Small square = tech</span></div>
-                </div>
-                <a href="projects.html" class="btn btn-lime">View all projects <i class="fas fa-arrow-right" style="font-size:0.65rem"></i></a>
-            </aside>
+
+        <div class="research-list">
+            <a class="study study-pub rv" href="https://ieeexplore.ieee.org/document/11338761" target="_blank" rel="noopener">
+                <span class="study-id mono">P-01</span>
+                <span class="study-body">
+                    <h3 class="study-title">SGSPose — neuromorphic-geometric fusion for 6D object pose estimation</h3>
+                    <p class="study-desc">Co-authored journal paper integrating spiking neural networks, graph neural
+                    networks, and SE(3)-equivariant optimization for 6D pose estimation. State-of-the-art results on the
+                    7-Scenes benchmark — mean translation errors reduced by over 70%, rotation errors within 8–21°
+                    across complex indoor scenes.</p>
+                    <span class="study-meta mono"><span>SNNs · GNNs · SE(3)-equivariant learning · PyTorch</span><span>IEEE Access · 2025</span></span>
+                </span>
+                <span class="study-cta mono">read paper ↗</span>
+            </a>
+
+            <a class="study study-pub rv" href="https://www.sciencedirect.com/science/article/pii/S0263224125035572" target="_blank" rel="noopener">
+                <span class="study-id mono">P-02</span>
+                <span class="study-body">
+                    <h3 class="study-title">GOA-UNet — metaheuristic optimization for medical image segmentation</h3>
+                    <p class="study-desc">Automated U-Net hyperparameter tuning using the Grasshopper Optimization
+                    Algorithm with GAN-based augmentation for crack segmentation — 98.5% accuracy on challenging
+                    crack identification tasks.</p>
+                    <span class="study-meta mono"><span>U-Net · GOA · GANs</span><span>Measurement, Elsevier · 2025</span></span>
+                </span>
+                <span class="study-cta mono">read paper ↗</span>
+            </a>
         </div>
     </section>
 
-    <!-- ════════════════ EDUCATION & LANGUAGES ════════════════ -->
-    <section class="section">
+    <!-- ════════ 04 · EXPERIENCE ════════ -->
+    <section class="section" id="experience" aria-labelledby="experience-title">
         <div class="section-head rv">
-            <span class="section-num">05</span>
-            <h2 class="section-title">Background</h2>
+            <span class="section-num mono">04</span>
+            <h2 class="section-title" id="experience-title">Experience</h2>
+            <p class="section-sub mono">every role added new capabilities</p>
         </div>
-        <div class="edu-lang rv">
-            <div class="edu-box">
-                <div class="edu-degree">Integrated M.Tech in Software Engineering</div>
-                <div class="edu-school">Vellore Institute of Technology (VIT), Chennai</div>
-                <div class="edu-meta">
-                    <span class="edu-year"><i class="fas fa-calendar-alt"></i> 2023 — 2028</span>
-                    <span class="edu-loc"><i class="fas fa-map-marker-alt"></i> Chennai, India</span>
+
+        <div class="tab-bar rv" role="tablist" aria-label="Experience type">
+            <button class="tab-btn active" data-tab="internships" role="tab" aria-selected="true">Internships</button>
+            <button class="tab-btn" data-tab="leadership" role="tab" aria-selected="false">Leadership</button>
+        </div>
+
+        <div class="tab-panel active" id="tab-internships" role="tabpanel">
+            <div class="growth">
+                <div class="growth-rail" aria-hidden="true"><div class="growth-rail-fill" aria-hidden="true"></div></div>
+                <article class="gevent rv">
+                    <span class="gevent-node" aria-hidden="true"></span>
+                    <p class="gevent-date mono">May — Jun 2025 · remote</p>
+                    <h3 class="gevent-role">AI &amp; Robotics Intern</h3>
+                    <p class="gevent-org mono">Coratia Technologies — Shark Tank India featured startup</p>
+                    <p class="gevent-desc">Designed a vision-based control system for a 3-DOF robotic arm —
+                    real-time hand detection and tracking with OpenCV translating hand movements into precise
+                    joint commands, URDF models and RViz simulation for testing, then inverse-kinematics servo
+                    control on physical hardware.</p>
+                    <div class="gevent-caps mono"><span>+ real-time vision</span><span>+ inverse kinematics</span><span>+ hardware integration</span></div>
+                </article>
+            </div>
+        </div>
+
+        <div class="tab-panel" id="tab-leadership" role="tabpanel">
+            <div class="growth">
+                <div class="growth-rail" aria-hidden="true"><div class="growth-rail-fill" aria-hidden="true"></div></div>
+                <article class="gevent rv">
+                    <span class="gevent-node gevent-node-live" aria-hidden="true"></span>
+                    <p class="gevent-date mono">Apr 2025 — present</p>
+                    <h3 class="gevent-role">President</h3>
+                    <p class="gevent-org mono">Microsoft Innovations Club · VIT Chennai</p>
+                    <p class="gevent-desc">Leading the executive board in organizing technical workshops and
+                    hackathons, while developing programs to expand membership and strengthen partnerships with
+                    Microsoft and technology organizations.</p>
+                    <div class="gevent-caps mono"><span>+ executive leadership</span><span>+ community building</span><span>+ partnerships</span></div>
+                </article>
+                <article class="gevent rv">
+                    <span class="gevent-node gevent-node-live" aria-hidden="true"></span>
+                    <p class="gevent-date mono">Sep 2025 — present</p>
+                    <h3 class="gevent-role">Team Manager — AUV Division</h3>
+                    <p class="gevent-org mono">Dreadnought Robotics · VIT Chennai</p>
+                    <p class="gevent-desc">Leading cross-functional team operations across Programming, Electrical,
+                    Mechanical, and Management departments — a team of 20+ — managing stakeholder relationships and
+                    representing the team at international AUV competitions.</p>
+                    <div class="gevent-caps mono"><span>+ team management</span><span>+ strategy</span><span>+ stakeholder relations</span></div>
+                </article>
+            </div>
+        </div>
+
+        <p class="edu-line mono rv">foundation — Integrated M.Tech, Software Engineering · VIT Chennai · 2023 — 2028 · GPA 8.4 / 10</p>
+    </section>
+
+    <!-- ════════ 05 · SKILLS ════════ -->
+    <section class="section" id="skills" aria-labelledby="skills-title">
+        <div class="section-head rv">
+            <span class="section-num mono">05</span>
+            <h2 class="section-title" id="skills-title">Skills</h2>
+            <p class="section-sub mono">a connected map, not a list</p>
+        </div>
+
+        <div class="cap-map" id="cap-map">
+            <svg class="cap-wires" id="cap-wires" aria-hidden="true"></svg>
+            <div class="cap-core rv" id="cap-core"><span class="mono">EA · core</span></div>
+            <div class="cap-grid">
+                <div class="cap-cluster rv" data-cluster>
+                    <h3 class="cap-name mono">Core Intelligence</h3>
+                    <div class="cap-nodes">
+                        <span class="cap-node"><i class="fas fa-eye"></i>Computer Vision</span>
+                        <span class="cap-node"><i class="fas fa-layer-group"></i>Deep Learning</span>
+                        <span class="cap-node"><i class="fas fa-diagram-project"></i>Machine Learning</span>
+                        <span class="cap-node"><i class="devicon-pytorch-original"></i>PyTorch</span>
+                        <span class="cap-node"><i class="devicon-tensorflow-original"></i>TensorFlow</span>
+                        <span class="cap-node"><i class="devicon-opencv-plain"></i>OpenCV</span>
+                        <span class="cap-node"><i class="fas fa-hand-sparkles"></i>MediaPipe</span>
+                        <span class="cap-node"><i class="fas fa-crosshairs"></i>YOLO</span>
+                        <span class="cap-node"><i class="fas fa-vector-square"></i>Roboflow</span>
+                    </div>
                 </div>
-                <div class="edu-desc">Focused on computer vision, robotics, machine learning, and software engineering. Actively involved in technical clubs, research projects, and competitive robotics.</div>
-            </div>
-            <div class="lang-box">
-                <div class="lang-box-title">Languages</div>
-                <div class="lang-item"><span class="lang-name">English</span><div class="lang-dots"><span class="lang-dot on"></span><span class="lang-dot on"></span><span class="lang-dot on"></span></div></div>
-                <div class="lang-item"><span class="lang-name">Hindi</span><div class="lang-dots"><span class="lang-dot on"></span><span class="lang-dot on"></span><span class="lang-dot on"></span></div></div>
-                <div class="lang-item"><span class="lang-name">Kannada</span><div class="lang-dots"><span class="lang-dot on"></span><span class="lang-dot on"></span><span class="lang-dot"></span></div></div>
-                <div class="lang-item"><span class="lang-name">French</span><div class="lang-dots"><span class="lang-dot on"></span><span class="lang-dot on"></span><span class="lang-dot"></span></div></div>
-                <div class="lang-item"><span class="lang-name">Spanish</span><div class="lang-dots"><span class="lang-dot on"></span><span class="lang-dot"></span><span class="lang-dot"></span></div></div>
+                <div class="cap-cluster rv" data-cluster>
+                    <h3 class="cap-name mono">Physical Systems</h3>
+                    <div class="cap-nodes">
+                        <span class="cap-node"><i class="fas fa-robot"></i>Robotics</span>
+                        <span class="cap-node"><i class="fas fa-gears"></i>ROS</span>
+                        <span class="cap-node"><i class="fas fa-water"></i>AUV Systems</span>
+                        <span class="cap-node"><i class="fas fa-hand"></i>Gesture Control</span>
+                        <span class="cap-node"><i class="devicon-arduino-plain"></i>Arduino</span>
+                        <span class="cap-node"><i class="devicon-raspberrypi-line"></i>Raspberry Pi</span>
+                        <span class="cap-node"><i class="fas fa-microchip"></i>Embedded Systems</span>
+                    </div>
+                </div>
+                <div class="cap-cluster rv" data-cluster>
+                    <h3 class="cap-name mono">Engineering</h3>
+                    <div class="cap-nodes">
+                        <span class="cap-node"><i class="devicon-python-plain"></i>Python</span>
+                        <span class="cap-node"><i class="devicon-c-plain"></i>C</span>
+                        <span class="cap-node"><i class="devicon-cplusplus-plain"></i>C++</span>
+                        <span class="cap-node"><i class="devicon-java-plain"></i>Java</span>
+                        <span class="cap-node"><i class="devicon-bash-plain"></i>Bash</span>
+                        <span class="cap-node"><i class="devicon-matlab-plain"></i>MATLAB</span>
+                        <span class="cap-node"><i class="devicon-azuresqldatabase-plain"></i>SQL</span>
+                        <span class="cap-node"><i class="devicon-mysql-original"></i>MySQL</span>
+                        <span class="cap-node"><i class="devicon-sqlite-plain"></i>SQLite</span>
+                        <span class="cap-node"><i class="devicon-git-plain"></i>Git</span>
+                        <span class="cap-node"><i class="devicon-linux-plain"></i>Linux</span>
+                        <span class="cap-node"><i class="devicon-vscode-plain"></i>VS Code</span>
+                        <span class="cap-node"><i class="devicon-pycharm-plain"></i>PyCharm</span>
+                    </div>
+                </div>
+                <div class="cap-cluster rv" data-cluster>
+                    <h3 class="cap-name mono">Research & Data</h3>
+                    <div class="cap-nodes">
+                        <span class="cap-node"><i class="devicon-numpy-plain"></i>NumPy</span>
+                        <span class="cap-node"><i class="devicon-pandas-plain"></i>Pandas</span>
+                        <span class="cap-node"><i class="devicon-jupyter-plain"></i>Jupyter</span>
+                        <span class="cap-node"><i class="devicon-google-plain"></i>Google Colab</span>
+                        <span class="cap-node"><i class="fas fa-chart-line"></i>Prophet</span>
+                        <span class="cap-node"><i class="fas fa-flask"></i>Experimentation</span>
+                    </div>
+                </div>
+                <div class="cap-cluster rv" data-cluster>
+                    <h3 class="cap-name mono">Human Systems</h3>
+                    <div class="cap-nodes">
+                        <span class="cap-node"><i class="fas fa-user-tie"></i>Leadership</span>
+                        <span class="cap-node"><i class="fas fa-chalkboard-user"></i>Mentorship</span>
+                        <span class="cap-node"><i class="fas fa-calendar-check"></i>Event Management</span>
+                        <span class="cap-node"><i class="fas fa-comments"></i>Communication</span>
+                        <span class="cap-node"><i class="fas fa-shuffle"></i>Adaptability</span>
+                        <span class="cap-node"><i class="fas fa-brain"></i>Analytical Thinking</span>
+                    </div>
+                </div>
+                <div class="cap-cluster rv" data-cluster>
+                    <h3 class="cap-name mono">Natural Languages</h3>
+                    <div class="cap-nodes">
+                        <span class="cap-node"><i class="fas fa-language"></i>English <em>fluent</em></span>
+                        <span class="cap-node"><i class="fas fa-language"></i>Hindi <em>fluent</em></span>
+                        <span class="cap-node"><i class="fas fa-language"></i>Kannada <em>working</em></span>
+                        <span class="cap-node"><i class="fas fa-language"></i>French <em>working</em></span>
+                        <span class="cap-node"><i class="fas fa-language"></i>Spanish <em>basic</em></span>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
 
-    <!-- ════════════════ CONTACT ════════════════ -->
-    <section class="contact-section" id="contact">
-        <div class="rv">
-            <div class="section-num" style="display:inline-block;margin-bottom:1.5rem">06</div>
-            <div class="contact-title">Let's build something<br><span class="em">together.</span></div>
-            <p class="contact-desc">Always open to conversations, collaborations, and opportunities in computer vision, robotics, and applied ML.</p>
-            <div class="contact-links">
-                <a href="https://www.linkedin.com/in/eshaan-adyanthaya-87a88a288/" target="_blank" class="contact-link"><i class="fab fa-linkedin-in"></i> LinkedIn</a>
-                <a href="https://github.com/Eshaan0110" target="_blank" class="contact-link"><i class="fab fa-github"></i> GitHub</a>
-                <a href="mailto:eshaan.adyanthaya@gmail.com" class="contact-link"><i class="fas fa-envelope"></i> Email</a>
-            </div>
+    <!-- ════════ 06 · CONTACT ════════ -->
+    <section class="section signal" id="contact" aria-labelledby="contact-title">
+        <div class="section-head rv">
+            <span class="section-num mono">06</span>
+            <h2 class="section-title" id="contact-title">Contact</h2>
+            <p class="section-sub mono">the channel is open</p>
+        </div>
+        <h3 class="signal-statement rv">Let's build machines that<br><span class="em">understand the world.</span></h3>
+        <p class="signal-desc rv">Open to conversations, collaborations, and opportunities in computer vision,
+        robotics, and applied machine learning.</p>
+        <div class="signal-links rv">
+            <a class="signal-link" href="mailto:eshaan.adyanthaya@gmail.com">
+                <span class="mono sl-proto">mail →</span> eshaan.adyanthaya@gmail.com
+            </a>
+            <a class="signal-link" href="https://github.com/Eshaan0110" target="_blank" rel="noopener">
+                <span class="mono sl-proto">github →</span> Eshaan0110
+            </a>
+            <a class="signal-link" href="https://www.linkedin.com/in/eshaan-adyanthaya-87a88a288/" target="_blank" rel="noopener">
+                <span class="mono sl-proto">linkedin →</span> eshaan-adyanthaya
+            </a>
         </div>
     </section>
 
-    <!-- ════════════════ FOOTER ════════════════ -->
+    </main>
+
     <footer class="footer">
         <div class="footer-inner">
-            <div class="footer-brand-block">
-                <strong class="footer-brand">EA://</strong>
-                <span class="footer-tagline">AI and Robotics enthusiast</span>
-            </div>
-            <div class="footer-links">
-                <a href="#hero" class="footer-link">Home</a>
-                <a href="#about" class="footer-link">About</a>
-                <a href="#experience" class="footer-link">Experience</a>
-                <a href="#skills" class="footer-link">Skills</a>
-                <a href="projects.html" class="footer-link">Projects</a>
-            </div>
-            <div class="footer-social">
-                <a href="https://github.com/Eshaan0110" target="_blank" class="social-link-sm"><i class="fab fa-github"></i></a>
-                <a href="https://www.linkedin.com/in/eshaan-adyanthaya-87a88a288/" target="_blank" class="social-link-sm"><i class="fab fa-linkedin-in"></i></a>
-                <a href="mailto:eshaan.adyanthaya@gmail.com" class="social-link-sm"><i class="fas fa-envelope"></i></a>
-            </div>
+            <span class="mono footer-note">designed &amp; built by Eshaan Adyanthaya</span>
         </div>
     </footer>
 
-    </div><!-- /page-wrap -->
-
-    <!-- Custom cursor -->
-    <div class="cursor-dot" id="cursor-dot"></div>
-    <div class="cursor-ring" id="cursor-ring"></div>
-    <div class="cursor-glow" id="cursor-glow"></div>
-
-    <!-- Cursor spotlight + project network -->
-    <script src="cursor-spotlight.js"></script>
-    <script src="project-network.js"></script>
-
-    <script>
-        // Scroll to top on reload
-        if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
-        window.scrollTo(0, 0);
-
-        // Loader
-        window.addEventListener('load', () => { setTimeout(() => document.getElementById('loader').classList.add('done'), 1800); });
-
-        // Progress bar
-        const progressFill = document.getElementById('progress-fill');
-        function updateProgress() {
-            const h = document.documentElement.scrollHeight - window.innerHeight;
-            progressFill.style.width = (window.scrollY / h * 100) + '%';
-        }
-        window.addEventListener('scroll', updateProgress);
-
-        // Smart navbar
-        const nav = document.getElementById('nav');
-        let lastY = 0;
-        window.addEventListener('scroll', () => {
-            const y = window.pageYOffset;
-            nav.classList.toggle('hidden', y > lastY && y > 120);
-            lastY = y;
-        });
-
-        // Active nav link
-        const navLinks = document.querySelectorAll('.nav-link');
-        const sections = document.querySelectorAll('section[id]');
-        window.addEventListener('scroll', () => {
-            const y = window.pageYOffset;
-            sections.forEach(s => {
-                const top = s.offsetTop - 150;
-                const h = s.offsetHeight;
-                const id = s.getAttribute('id');
-                if (y >= top && y < top + h) {
-                    navLinks.forEach(l => {
-                        l.classList.remove('active');
-                        if (l.getAttribute('href') === '#' + id) l.classList.add('active');
-                    });
-                }
-            });
-        });
-
-        // Scroll reveal
-        const obs = new IntersectionObserver((entries) => {
-            entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('vis'); obs.unobserve(e.target); }});
-        }, { threshold: 0.08, rootMargin: '0px 0px -60px 0px' });
-        document.querySelectorAll('.rv').forEach(el => obs.observe(el));
-
-        // Smooth scroll
-        document.querySelectorAll('a[href^="#"]').forEach(a => {
-            a.addEventListener('click', e => {
-                e.preventDefault();
-                const t = document.querySelector(a.getAttribute('href'));
-                if (t) t.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            });
-        });
-
-        // Matrix typing effect
-        const greetEl = document.getElementById('hero-greeting');
-        const finalText = 'Hi there! 👋';
-        const mchars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*';
-        function matrixType() {
-            let iter = 0;
-            const iv = setInterval(() => {
-                greetEl.textContent = finalText.split('').map((c, i) => {
-                    if (i < iter) return finalText[i];
-                    if (c === ' ' || c === '👋') return c;
-                    return mchars[Math.floor(Math.random() * mchars.length)];
-                }).join('');
-                if (iter >= finalText.length) clearInterval(iv);
-                iter += 1/3;
-            }, 50);
-        }
-        setTimeout(matrixType, 1900);
-
-        // ═══ TAB SWITCHING ═══
-        document.querySelectorAll('.tab-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-                document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
-            });
-        });
-
-        // ═══ CUSTOM CURSOR ═══
-        const dot = document.getElementById('cursor-dot');
-        const ring = document.getElementById('cursor-ring');
-        const glow = document.getElementById('cursor-glow');
-        let mx = -100, my = -100, dx = -100, dy = -100, rx = -100, ry = -100, gx = -100, gy = -100;
-
-        // Trail particles
-        const TRAIL_COUNT = 8;
-        const trails = [];
-        for (let i = 0; i < TRAIL_COUNT; i++) {
-            const t = document.createElement('div');
-            t.className = 'cursor-trail';
-            document.body.appendChild(t);
-            trails.push({ el: t, x: -100, y: -100 });
-        }
-
-        document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
-
-        // Hover detection
-        const hoverables = 'a, button, .tab-btn, .fbtn, .nav-link, .nav-cta, .nav-brand, .social-link, .social-link-sm, .contact-link, .btn, .tech-badge, .skill-tag, .footer-link, .back-link, .pcard-link, .journey-card';
-        document.addEventListener('mouseover', e => {
-            if (e.target.closest(hoverables)) ring.classList.add('hovering');
-        });
-        document.addEventListener('mouseout', e => {
-            if (e.target.closest(hoverables)) ring.classList.remove('hovering');
-        });
-
-        function animateCursor() {
-            // Dot follows instantly
-            dx += (mx - dx) * 0.65;
-            dy += (my - dy) * 0.65;
-            dot.style.transform = `translate(${dx - 2.5}px, ${dy - 2.5}px)`;
-
-            // Ring follows with lag
-            rx += (mx - rx) * 0.15;
-            ry += (my - ry) * 0.15;
-            ring.style.transform = `translate(${rx - ring.offsetWidth/2}px, ${ry - ring.offsetHeight/2}px)`;
-
-            // Glow follows slower
-            gx += (mx - gx) * 0.08;
-            gy += (my - gy) * 0.08;
-            glow.style.transform = `translate(${gx - 200}px, ${gy - 200}px)`;
-
-            // Trail particles
-            let prevX = dx, prevY = dy;
-            for (let i = 0; i < TRAIL_COUNT; i++) {
-                const t = trails[i];
-                const speed = 0.35 - (i * 0.03);
-                t.x += (prevX - t.x) * speed;
-                t.y += (prevY - t.y) * speed;
-                t.el.style.transform = `translate(${t.x - 2}px, ${t.y - 2}px)`;
-                t.el.style.opacity = (1 - i / TRAIL_COUNT) * 0.4;
-                t.el.style.width = t.el.style.height = (4 - i * 0.4) + 'px';
-                prevX = t.x;
-                prevY = t.y;
-            }
-
-            requestAnimationFrame(animateCursor);
-        }
-        animateCursor();
-
-        // ═══ TILT ON HOVER (cards) ═══
-        document.querySelectorAll('.journey-card, .stat-block, .skill-cell').forEach(card => {
-            card.addEventListener('mousemove', e => {
-                const rect = card.getBoundingClientRect();
-                const x = (e.clientX - rect.left) / rect.width - 0.5;
-                const y = (e.clientY - rect.top) / rect.height - 0.5;
-                card.style.transform = `perspective(600px) rotateY(${x * 4}deg) rotateX(${-y * 4}deg)`;
-            });
-            card.addEventListener('mouseleave', () => {
-                card.style.transform = 'perspective(600px) rotateY(0) rotateX(0)';
-            });
-        });
-    </script>
+    <script src="mind.js?v=8" defer></script>
 </body>
 </html>
