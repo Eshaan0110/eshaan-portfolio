@@ -3,275 +3,369 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Projects | Eshaan Adyanthaya</title>
-    <meta name="description" content="Projects by Eshaan Adyanthaya — Computer Vision, Robotics & Software Engineering.">
+    <title>Engineering Archive | Eshaan Adyanthaya</title>
+    <meta name="description" content="The complete engineering archive of Eshaan Adyanthaya — case studies in computer vision, robotics, machine learning, and software engineering.">
+    <meta name="theme-color" content="#040405">
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <link rel="apple-touch-icon" href="apple-touch-icon.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.16.0/devicon.min.css">
-    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600&family=Space+Mono:wght@400;700&family=Syne:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css?v=8">
 </head>
 <body>
-    <!-- LOADER -->
-    <div class="loader" id="loader">
-        <div class="loader-ascii" style="font-size:clamp(0.5rem,1.5vw,0.9rem);color:var(--cyan)">> loading projects...</div>
-        <div class="loader-bar-track"><div class="loader-bar-fill" style="background:var(--cyan)"></div></div>
-    </div>
 
-    <!-- NAV -->
-    <nav class="nav" id="navbar">
+    <canvas id="field" aria-hidden="true"></canvas>
+
+    <nav class="nav" id="nav" aria-label="Primary">
         <div class="nav-inner">
-            <a href="index.html" class="nav-brand">EA://</a>
+            <a href="index.html" class="nav-brand">EA<span class="brand-pulse" aria-hidden="true"></span></a>
             <div class="nav-links">
                 <a href="index.html#about" class="nav-link">About</a>
-                <a href="index.html#experience" class="nav-link">Journey</a>
+                <a href="index.html#projects" class="nav-link active">Projects</a>
+                <a href="index.html#research" class="nav-link">Research</a>
+                <a href="index.html#experience" class="nav-link">Experience</a>
                 <a href="index.html#skills" class="nav-link">Skills</a>
-                <a href="projects.html" class="nav-link active">Projects</a>
+                <a href="resume.html" class="nav-link">Resume</a>
                 <a href="index.html#contact" class="nav-cta">Contact</a>
             </div>
         </div>
     </nav>
 
-    <div class="page-wrap">
+    <main>
 
-    <!-- PAGE HERO -->
     <div class="page-hero">
-        <a href="index.html" class="back-link"><i class="fas fa-arrow-left"></i> Back home</a>
-        <h1 class="page-title">Selected <span class="em">projects</span></h1>
-        <p class="page-desc">A collection of work across computer vision, robotics, machine learning, and software engineering.</p>
+        <a href="index.html" class="back-link rv vis">← back home</a>
+        <h1 class="page-title rv vis">Engineering <span class="em">archive</span></h1>
+        <p class="page-desc rv vis">Every machine built so far, documented as a case study —
+        architecture, challenges, engineering decisions, and results. Hover or toggle each
+        visual for the engineering view.</p>
     </div>
 
-    <!-- FILTERS -->
-    <div class="filters">
-        <button class="fbtn on" data-f="all">All</button>
-        <button class="fbtn" data-f="computer-vision">Computer Vision</button>
-        <button class="fbtn" data-f="robotics">Robotics</button>
-        <button class="fbtn" data-f="ml">ML / Data</button>
-        <button class="fbtn" data-f="software">Software Engineering</button>
-        <span class="filter-count"><span id="cnt">6</span> projects</span>
+    <div class="archive">
+
+        <!-- ═══ CASE 01 · MIRA ═══ -->
+        <article class="case rv" id="mira">
+            <header class="case-head">
+                <span class="case-idx mono">PRJ 01 · <span class="live">active</span></span>
+                <h2 class="case-name">MIRA — AUV Perception Stack</h2>
+                <p class="case-mission">An underwater vehicle that sees in the dark.</p>
+            </header>
+            <div class="exhibit" data-theme="auv">
+                <div class="ex-visual">
+                    <img class="ex-photo" src="image/auv.jpeg" alt="MIRA autonomous underwater vehicle" loading="lazy">
+                    <svg class="ex-stage" viewBox="0 0 800 560" preserveAspectRatio="xMidYMid slice" aria-hidden="true"></svg>
+                    <span class="ex-index mono">fig. — MIRA, Team Dreadnought's competition AUV</span>
+                    <button class="ex-toggle mono" aria-pressed="false">engineering view</button>
+                </div>
+                <div class="ex-spec">
+                    <p class="ex-desc">The full computer-vision perception stack for Team Dreadnought's
+                    autonomous underwater vehicle — custom object detection, sonar preprocessing, and
+                    real-time inference driving navigation and task execution at international competitions.</p>
+                    <dl class="ex-table mono">
+                        <div><dt>role</dt><dd>Perception lead · Team Dreadnought</dd></div>
+                        <div><dt>stack</dt><dd>YOLO · OpenCV · ROS · Python · Roboflow</dd></div>
+                        <div><dt>result</dt><dd>deployed at international AUV competitions</dd></div>
+                    </dl>
+                    <a class="ex-link mono" href="https://github.com/Eshaan0110/AUV-Mira" target="_blank" rel="noopener">view source ↗</a>
+                </div>
+            </div>
+            <div class="case-grid">
+                <div class="case-block rv">
+                    <h3 class="mono">architecture</h3>
+                    <p>Camera and sonar streams are preprocessed on board, fed to a custom-trained YOLO
+                    detector, and published into the vehicle's ROS graph — where navigation and control
+                    subsystems consume detections in real time.</p>
+                </div>
+                <div class="case-block rv">
+                    <h3 class="mono">challenge</h3>
+                    <p>Underwater perception is hostile: light distortion, turbidity, and colour loss break
+                    models trained on clean data — and everything must run within the latency budget of a
+                    live competition task, on the vehicle's own hardware.</p>
+                </div>
+                <div class="case-block rv">
+                    <h3 class="mono">engineering decisions</h3>
+                    <p>A domain-specific dataset annotated and versioned in Roboflow, with augmentation
+                    tuned for underwater distortion; sonar preprocessing to clean acoustic returns; and a
+                    modular ROS integration so perception evolves without touching control.</p>
+                </div>
+                <div class="case-block rv">
+                    <h3 class="mono">results</h3>
+                    <p>A perception stack that runs in real time on board and has been exercised under
+                    real competition conditions at international AUV challenges.</p>
+                </div>
+            </div>
+        </article>
+
+        <!-- ═══ CASE 02 · ROBOTIC ARM ═══ -->
+        <article class="case rv" id="arm">
+            <header class="case-head">
+                <span class="case-idx mono">PRJ 02 · complete</span>
+                <h2 class="case-name">3-DOF Gesture-Controlled Arm</h2>
+                <p class="case-mission">A robotic arm that mirrors the human hand.</p>
+            </header>
+            <div class="exhibit" data-theme="kinematics">
+                <div class="ex-visual">
+                    <video class="ex-video" src="image/robarm.mp4" autoplay loop muted playsinline preload="metadata" aria-label="Gesture-controlled robotic arm tracking a human hand in real time"></video>
+                    <svg class="ex-stage" viewBox="0 0 800 560" preserveAspectRatio="xMidYMid slice" aria-hidden="true"></svg>
+                    <span class="ex-index mono">demo — the arm mirroring the human hand</span>
+                    <button class="ex-toggle mono" aria-pressed="false">engineering view</button>
+                </div>
+                <div class="ex-spec">
+                    <p class="ex-desc">Real-time hand tracking driving a 3-DOF manipulator end-to-end —
+                    from camera to MediaPipe landmark detection to joint-angle mapping to servo motion —
+                    validated on physical hardware at Coratia Technologies.</p>
+                    <dl class="ex-table mono">
+                        <div><dt>role</dt><dd>AI &amp; Robotics Intern · Coratia Technologies</dd></div>
+                        <div><dt>stack</dt><dd>MediaPipe · OpenCV · PyFirmata · Arduino</dd></div>
+                        <div><dt>result</dt><dd>validated on physical hardware</dd></div>
+                    </dl>
+                    <a class="ex-link mono" href="https://github.com/Eshaan0110/Eshaan--Coratia-Technologies" target="_blank" rel="noopener">view source ↗</a>
+                </div>
+            </div>
+            <div class="case-grid">
+                <div class="case-block rv">
+                    <h3 class="mono">architecture</h3>
+                    <p>An OpenCV capture loop feeds MediaPipe, which resolves 21 keypoints per hand at
+                    camera frame rate. Landmark geometry is mapped to three joint angles, sent over a
+                    PyFirmata serial bridge to Arduino-controlled servos.</p>
+                </div>
+                <div class="case-block rv">
+                    <h3 class="mono">challenge</h3>
+                    <p>Raw hand landmarks are noisy, and servos amplify every jitter into visible shaking.
+                    The arm had to feel like a mirror of the hand — smooth, immediate, and stable on real
+                    hardware, not just in a demo window.</p>
+                </div>
+                <div class="case-block rv">
+                    <h3 class="mono">engineering decisions</h3>
+                    <p>Smoothing between landmark detection and actuation to keep physical motion stable;
+                    a clean joint-angle mapping for all three degrees of freedom; and dual-hand tracking
+                    so each hand can own a different control axis.</p>
+                </div>
+                <div class="case-block rv">
+                    <h3 class="mono">results</h3>
+                    <p>An end-to-end gesture control system validated on a physical 3-DOF arm during the
+                    internship at Coratia Technologies.</p>
+                </div>
+            </div>
+        </article>
+
+        <!-- ═══ CASE 03 · OBJECT DETECTION ═══ -->
+        <article class="case rv" id="detect">
+            <header class="case-head">
+                <span class="case-idx mono">PRJ 03 · complete</span>
+                <h2 class="case-name">Custom Object Detection Pipeline</h2>
+                <p class="case-mission">Teaching a model to find what matters underwater.</p>
+            </header>
+            <div class="exhibit" data-theme="vision">
+                <div class="ex-visual">
+                    <svg class="ex-stage" viewBox="0 0 800 560" preserveAspectRatio="xMidYMid slice" aria-hidden="true"></svg>
+                    <span class="ex-index mono">fig. — feature field &amp; confirmed detection</span>
+                    <button class="ex-toggle mono" aria-pressed="false">engineering view</button>
+                </div>
+                <div class="ex-spec">
+                    <p class="ex-desc">A complete train-to-deploy pipeline: domain dataset annotated in
+                    Roboflow, custom YOLO training with augmentation tuned for underwater distortion, and
+                    inference optimised for real-time performance on edge hardware.</p>
+                    <dl class="ex-table mono">
+                        <div><dt>role</dt><dd>end-to-end vision pipeline</dd></div>
+                        <div><dt>stack</dt><dd>YOLO · Roboflow · PyTorch · OpenCV</dd></div>
+                        <div><dt>result</dt><dd>real-time on edge, shipped into MIRA</dd></div>
+                    </dl>
+                    <a class="ex-link mono" href="https://github.com/Eshaan0110/AUV-Mira" target="_blank" rel="noopener">view source ↗</a>
+                </div>
+            </div>
+            <div class="case-grid">
+                <div class="case-block rv">
+                    <h3 class="mono">architecture</h3>
+                    <p>Dataset annotation and versioning in Roboflow with controlled splits; custom YOLO
+                    training in PyTorch; then an optimisation pass balancing model size, input resolution,
+                    and pipeline latency for the deployment target.</p>
+                </div>
+                <div class="case-block rv">
+                    <h3 class="mono">challenge</h3>
+                    <p>Domain shift: pretrained detectors collapse on underwater imagery, and the deployment
+                    hardware is a constrained edge device — accuracy had to survive both the water and the
+                    compute budget.</p>
+                </div>
+                <div class="case-block rv">
+                    <h3 class="mono">engineering decisions</h3>
+                    <p>Building a domain-specific dataset rather than fine-tuning on generic data; versioned
+                    augmentation policies per experiment; and treating real-time inference as a design
+                    constraint from day one, not an afterthought.</p>
+                </div>
+                <div class="case-block rv">
+                    <h3 class="mono">results</h3>
+                    <p>Real-time detection on edge hardware, shipped into the MIRA competition perception
+                    stack and exercised under live competition conditions.</p>
+                </div>
+            </div>
+        </article>
+
+        <!-- ═══ CASE 04 · MPi ═══ -->
+        <article class="case rv" id="mpi">
+            <header class="case-head">
+                <span class="case-idx mono">PRJ 04 · complete</span>
+                <h2 class="case-name">MPi — Market Intelligence</h2>
+                <p class="case-mission">Reading a nation's payment flows before they happen.</p>
+            </header>
+            <div class="exhibit" data-theme="forecast">
+                <div class="ex-visual">
+                    <svg class="ex-stage" viewBox="0 0 800 560" preserveAspectRatio="xMidYMid slice" aria-hidden="true"></svg>
+                    <span class="ex-index mono">fig. — observed series → forecast horizon</span>
+                    <button class="ex-toggle mono" aria-pressed="false">engineering view</button>
+                </div>
+                <div class="ex-spec">
+                    <p class="ex-desc">An end-to-end pipeline over RBI Payment Systems data — automated
+                    Playwright ingestion, Excel-to-Parquet processing, and Prophet time-series forecasting,
+                    written up in a production architecture design doc.</p>
+                    <dl class="ex-table mono">
+                        <div><dt>role</dt><dd>data engineering &amp; forecasting</dd></div>
+                        <div><dt>stack</dt><dd>Prophet · Playwright · Pandas · Parquet</dd></div>
+                        <div><dt>result</dt><dd>2.1% MAPE on credit-card volumes</dd></div>
+                    </dl>
+                    <a class="ex-link mono" href="https://github.com/Eshaan0110/mpi-market-intelligence" target="_blank" rel="noopener">view source ↗</a>
+                </div>
+            </div>
+            <div class="case-grid">
+                <div class="case-block rv">
+                    <h3 class="mono">architecture</h3>
+                    <p>Playwright automation scrapes the RBI DBIE portal; raw Excel releases are parsed and
+                    normalised into columnar Parquet; Prophet models forecast credit and debit card volumes
+                    from the cleaned series.</p>
+                </div>
+                <div class="case-block rv">
+                    <h3 class="mono">challenge</h3>
+                    <p>The source is a dynamic government portal publishing irregular Excel files — the
+                    pipeline had to survive both the portal's structure and the data's inconsistency before
+                    any modelling could begin.</p>
+                </div>
+                <div class="case-block rv">
+                    <h3 class="mono">engineering decisions</h3>
+                    <p>Browser automation over brittle URL guessing; Parquet for fast, typed analysis;
+                    Prophet for interpretable seasonal decomposition; and a design doc describing how the
+                    prototype scales into a scheduled, monitored production system.</p>
+                </div>
+                <div class="case-block rv">
+                    <h3 class="mono">results</h3>
+                    <p>The credit-card volume model reached 2.1% MAPE, with the full path from raw portal
+                    to forecast automated end-to-end.</p>
+                </div>
+            </div>
+        </article>
+
+        <!-- ═══ CASE 05 · DEEP LEARNING JOURNEY ═══ -->
+        <article class="case rv" id="dlj">
+            <header class="case-head">
+                <span class="case-idx mono">PRJ 05 · <span class="live">active</span></span>
+                <h2 class="case-name">Deep Learning Journey</h2>
+                <p class="case-mission">Deep learning, rebuilt by hand from zero.</p>
+            </header>
+            <div class="exhibit" data-theme="learning">
+                <div class="ex-visual">
+                    <svg class="ex-stage" viewBox="0 0 800 560" preserveAspectRatio="xMidYMid slice" aria-hidden="true"></svg>
+                    <span class="ex-index mono">fig. — a loss curve settling into its minimum</span>
+                    <button class="ex-toggle mono" aria-pressed="false">engineering view</button>
+                </div>
+                <div class="ex-spec">
+                    <p class="ex-desc">A structured, ground-up curriculum built in public — neural networks
+                    and backpropagation from scratch in NumPy, then PyTorch training loops, CNNs, and
+                    transfer learning. Every concept proven in runnable code.</p>
+                    <dl class="ex-table mono">
+                        <div><dt>role</dt><dd>self-directed curriculum</dd></div>
+                        <div><dt>stack</dt><dd>NumPy · PyTorch · Jupyter</dd></div>
+                        <div><dt>result</dt><dd>46 notebooks, built in public</dd></div>
+                    </dl>
+                    <a class="ex-link mono" href="https://github.com/Eshaan0110/Deep-Learning-Journey" target="_blank" rel="noopener">view source ↗</a>
+                </div>
+            </div>
+            <div class="case-grid">
+                <div class="case-block rv">
+                    <h3 class="mono">architecture</h3>
+                    <p>A deliberate progression: forward passes, backpropagation, and gradient descent by
+                    hand in NumPy first; then PyTorch tensors, autograd, and training loops; then CNNs and
+                    transfer learning applied to vision problems.</p>
+                </div>
+                <div class="case-block rv">
+                    <h3 class="mono">challenge</h3>
+                    <p>Tutorials create the illusion of understanding. The goal was the real thing — being
+                    able to rebuild every layer of the stack from an empty file, without reference.</p>
+                </div>
+                <div class="case-block rv">
+                    <h3 class="mono">engineering decisions</h3>
+                    <p>From-scratch implementations before frameworks; one runnable notebook per concept;
+                    and building in public so the record of progress is honest and inspectable.</p>
+                </div>
+                <div class="case-block rv">
+                    <h3 class="mono">results</h3>
+                    <p>46 commits of working notebooks covering the path from raw NumPy to transfer
+                    learning — the foundation under the vision systems in this archive.</p>
+                </div>
+            </div>
+        </article>
+
+        <!-- ═══ CASE 06 · AGRI-MITRA ═══ -->
+        <article class="case rv" id="agri">
+            <header class="case-head">
+                <span class="case-idx mono">PRJ 06 · complete</span>
+                <h2 class="case-name">Agri-Mitra — Smart India Hackathon</h2>
+                <p class="case-mission">Field intelligence for the people who feed us.</p>
+            </header>
+            <div class="exhibit" data-theme="fieldwork">
+                <div class="ex-visual">
+                    <svg class="ex-stage" viewBox="0 0 800 560" preserveAspectRatio="xMidYMid slice" aria-hidden="true"></svg>
+                    <span class="ex-index mono">fig. — growth from a single field line</span>
+                    <button class="ex-toggle mono" aria-pressed="false">engineering view</button>
+                </div>
+                <div class="ex-spec">
+                    <p class="ex-desc">An agricultural intelligence platform — crop recommendations, disease
+                    detection guidance, and market price data for farmers. Contributed the computer-vision
+                    and backend data pipeline components.</p>
+                    <dl class="ex-table mono">
+                        <div><dt>role</dt><dd>CV &amp; data pipeline · team build</dd></div>
+                        <div><dt>stack</dt><dd>JavaScript · Computer Vision · Web</dd></div>
+                        <div><dt>result</dt><dd>built for Smart India Hackathon</dd></div>
+                    </dl>
+                    <a class="ex-link mono" href="https://github.com/Eshaan0110/Agri-Mitra" target="_blank" rel="noopener">view source ↗</a>
+                </div>
+            </div>
+            <div class="case-grid">
+                <div class="case-block rv">
+                    <h3 class="mono">architecture</h3>
+                    <p>A JavaScript web application backed by a data pipeline serving market prices and crop
+                    recommendation inputs, with computer-vision components providing disease detection
+                    guidance.</p>
+                </div>
+                <div class="case-block rv">
+                    <h3 class="mono">challenge</h3>
+                    <p>Hackathon constraints: a multidisciplinary team, a hard deadline, and users — farmers —
+                    for whom the interface had to be simple even though the system behind it was not.</p>
+                </div>
+                <div class="case-block rv">
+                    <h3 class="mono">engineering decisions</h3>
+                    <p>A clean split between the vision components and the data pipeline so the team could
+                    build in parallel; recommendations delivered as plain guidance rather than raw model
+                    output.</p>
+                </div>
+                <div class="case-block rv">
+                    <h3 class="mono">results</h3>
+                    <p>A working platform delivered for the Smart India Hackathon, with the computer-vision
+                    and backend data components contributed to the team build.</p>
+                </div>
+            </div>
+        </article>
+
     </div>
 
-    <!-- PROJECTS GRID -->
-    <div class="projects-grid" id="grid">
+    </main>
 
-        <!-- AUV Mira -->
-        <div class="pcard rv" data-c="computer-vision robotics">
-            <div class="pcard-accent a-lime"></div>
-            <div class="pcard-img"><img src="image/auv.jpeg" alt="AUV Mira"></div>
-            <div class="pcard-head">
-                <div class="pcard-icon ic-lime"><i class="fas fa-eye"></i></div>
-                <span class="pcard-status live">Active</span>
-            </div>
-            <h3 class="pcard-title">AUV Mira — Perception Stack</h3>
-            <p class="pcard-desc">Designed the full computer vision perception stack for Team Dreadnought's AUV. Custom YOLO-based object detection, sonar preprocessing, and real-time inference for underwater navigation and task execution at international competitions.</p>
-            <div class="pcard-tags"><span class="pcard-tag"><i class="fas fa-crosshairs"></i> YOLO</span><span class="pcard-tag"><i class="devicon-opencv-plain"></i> OpenCV</span><span class="pcard-tag"><i class="fas fa-cogs"></i> ROS</span><span class="pcard-tag"><i class="devicon-python-plain"></i> Python</span><span class="pcard-tag"><i class="fas fa-vector-square"></i> Roboflow</span></div>
-            <a href="https://github.com/Eshaan0110/AUV-Mira" target="_blank" class="pcard-link"><i class="fab fa-github"></i> View Code</a>
-        </div>
-
-        <!-- Robotic Arm -->
-        <div class="pcard rv" data-c="robotics computer-vision">
-            <div class="pcard-accent a-cyan"></div>
-            <div class="pcard-head">
-                <div class="pcard-icon ic-cyan"><i class="fas fa-hand-paper"></i></div>
-                <span class="pcard-status done">Complete</span>
-            </div>
-            <h3 class="pcard-title">3-DOF Gesture-Controlled Robotic Arm</h3>
-            <p class="pcard-desc">Real-time hand-tracking system to control a 3-DOF robotic arm using hand gestures. Built end-to-end using MediaPipe for landmark detection, OpenCV for the vision pipeline, and PyFirmata for Arduino servo control. Includes dual-hand tracking and joint-angle mapping — validated in hardware at Coratia Technologies.</p>
-            <div class="pcard-tags"><span class="pcard-tag"><i class="fas fa-hand-sparkles"></i> MediaPipe</span><span class="pcard-tag"><i class="devicon-python-plain"></i> PyFirmata</span><span class="pcard-tag"><i class="devicon-opencv-plain"></i> OpenCV</span><span class="pcard-tag"><i class="devicon-python-plain"></i> Python</span><span class="pcard-tag"><i class="devicon-arduino-plain"></i> Arduino</span></div>
-            <a href="https://github.com/Eshaan0110/Eshaan--Coratia-Technologies" target="_blank" class="pcard-link"><i class="fab fa-github"></i> View Code</a>
-        </div>
-
-        <!-- Deep Learning Journey -->
-        <div class="pcard rv" data-c="ml">
-            <div class="pcard-accent a-magenta"></div>
-            <div class="pcard-head">
-                <div class="pcard-icon ic-magenta"><i class="fas fa-brain"></i></div>
-                <span class="pcard-status live">Active</span>
-            </div>
-            <h3 class="pcard-title">Deep Learning Journey</h3>
-            <p class="pcard-desc">Structured learning repo documenting a ground-up deep learning curriculum — from NumPy fundamentals and neural networks from scratch to PyTorch tensor operations and model training. 46 commits of hands-on notebooks covering backprop, CNNs, and transfer learning.</p>
-            <div class="pcard-tags"><span class="pcard-tag"><i class="devicon-pytorch-original"></i> PyTorch</span><span class="pcard-tag"><i class="devicon-numpy-original"></i> NumPy</span><span class="pcard-tag"><i class="fas fa-project-diagram"></i> CNN</span><span class="pcard-tag"><i class="devicon-python-plain"></i> Python</span><span class="pcard-tag"><i class="devicon-jupyter-plain"></i> Jupyter</span></div>
-            <a href="https://github.com/Eshaan0110/Deep-Learning-Journey" target="_blank" class="pcard-link"><i class="fab fa-github"></i> View Code</a>
-        </div>
-
-        <!-- MPI Market Intelligence -->
-        <div class="pcard rv" data-c="ml software">
-            <div class="pcard-accent a-orange"></div>
-            <div class="pcard-head">
-                <div class="pcard-icon ic-orange"><i class="fas fa-chart-line"></i></div>
-                <span class="pcard-status done">Complete</span>
-            </div>
-            <h3 class="pcard-title">MPi — Market Intelligence Platform</h3>
-            <p class="pcard-desc">RBI Payment Systems data ingestion and ML forecasting pipeline. Scrapes the RBI DBIE portal via Playwright, parses Excel data into Parquet, and runs Prophet time-series forecasting on credit and debit card volumes. Credit card model achieved 2.1% MAPE. Includes a production pipeline architecture design doc.</p>
-            <div class="pcard-tags"><span class="pcard-tag"><i class="fas fa-chart-area"></i> Prophet</span><span class="pcard-tag"><i class="fas fa-theater-masks"></i> Playwright</span><span class="pcard-tag"><i class="devicon-pandas-original"></i> Pandas</span><span class="pcard-tag"><i class="devicon-python-plain"></i> Python</span><span class="pcard-tag"><i class="fas fa-database"></i> Parquet</span></div>
-            <a href="https://github.com/Eshaan0110/mpi-market-intelligence" target="_blank" class="pcard-link"><i class="fab fa-github"></i> View Code</a>
-        </div>
-
-        <!-- Agri Mitra -->
-        <div class="pcard rv" data-c="software ml">
-            <div class="pcard-accent a-blue"></div>
-            <div class="pcard-head">
-                <div class="pcard-icon ic-blue"><i class="fas fa-seedling"></i></div>
-                <span class="pcard-status done">Complete</span>
-            </div>
-            <h3 class="pcard-title">Agri-Mitra — Smart India Hackathon</h3>
-            <p class="pcard-desc">Agricultural intelligence platform built for Smart India Hackathon. A JavaScript-based web app providing farmers with crop recommendations, disease detection guidance, and market price data. Contributed to the computer vision and backend data pipeline components of the team project.</p>
-            <div class="pcard-tags"><span class="pcard-tag"><i class="devicon-javascript-plain"></i> JavaScript</span><span class="pcard-tag"><i class="fas fa-globe"></i> Web</span><span class="pcard-tag"><i class="fas fa-eye"></i> Computer Vision</span><span class="pcard-tag"><i class="fas fa-trophy"></i> SIH</span></div>
-            <a href="https://github.com/Eshaan0110/Agri-Mitra" target="_blank" class="pcard-link"><i class="fab fa-github"></i> View Code</a>
-        </div>
-
-        <!-- Custom Object Detection -->
-        <div class="pcard rv" data-c="computer-vision ml">
-            <div class="pcard-accent a-lime"></div>
-            <div class="pcard-head">
-                <div class="pcard-icon ic-lime"><i class="fas fa-eye"></i></div>
-                <span class="pcard-status done">Complete</span>
-            </div>
-            <h3 class="pcard-title">Custom Object Detection Pipeline</h3>
-            <p class="pcard-desc">Trained and deployed a custom YOLO model on a domain-specific dataset using Roboflow for annotation and labelling. Optimised inference for real-time performance on edge hardware — directly applied in the AUV Mira competition perception stack.</p>
-            <div class="pcard-tags"><span class="pcard-tag"><i class="fas fa-crosshairs"></i> YOLO</span><span class="pcard-tag"><i class="fas fa-vector-square"></i> Roboflow</span><span class="pcard-tag"><i class="devicon-pytorch-original"></i> PyTorch</span><span class="pcard-tag"><i class="devicon-opencv-plain"></i> OpenCV</span><span class="pcard-tag"><i class="devicon-python-plain"></i> Python</span></div>
-            <a href="https://github.com/Eshaan0110/AUV-Mira" target="_blank" class="pcard-link"><i class="fab fa-github"></i> View Code</a>
-        </div>
-
-        <p class="no-results" id="nores">No projects found for this filter.</p>
-    </div>
-
-    <!-- FOOTER -->
     <footer class="footer">
         <div class="footer-inner">
-            <div class="footer-brand-block">
-                <strong class="footer-brand">EA://</strong>
-                <span class="footer-tagline">AI and Robotics enthusiast</span>
-            </div>
-            <div class="footer-links">
-                <a href="index.html" class="footer-link">Home</a>
-                <a href="index.html#about" class="footer-link">About</a>
-                <a href="index.html#experience" class="footer-link">Experience</a>
-                <a href="index.html#skills" class="footer-link">Skills</a>
-                <a href="projects.html" class="footer-link">Projects</a>
-            </div>
-            <div class="footer-social">
-                <a href="https://github.com/Eshaan0110" target="_blank" class="social-link-sm"><i class="fab fa-github"></i></a>
-                <a href="https://www.linkedin.com/in/eshaan-adyanthaya-87a88a288/" target="_blank" class="social-link-sm"><i class="fab fa-linkedin-in"></i></a>
-                <a href="mailto:eshaan.adyanthaya@gmail.com" class="social-link-sm"><i class="fas fa-envelope"></i></a>
-            </div>
+            <span class="mono">EA — perception · intelligence · motion</span>
+            <span class="mono footer-note">designed &amp; built by Eshaan Adyanthaya</span>
         </div>
     </footer>
 
-    </div>
-
-    <!-- Custom cursor -->
-    <div class="cursor-dot" id="cursor-dot"></div>
-    <div class="cursor-ring" id="cursor-ring"></div>
-    <div class="cursor-glow" id="cursor-glow"></div>
-
-    <script>
-        // Loader
-        window.addEventListener('load', () => { setTimeout(() => document.getElementById('loader').classList.add('done'), 1200); });
-
-        // Navbar hide on scroll
-        const nav = document.getElementById('navbar');
-        let lastY = 0;
-        window.addEventListener('scroll', () => {
-            const y = window.pageYOffset;
-            nav.classList.toggle('hidden', y > lastY && y > 100);
-            lastY = y;
-        });
-
-        // Scroll reveal
-        const obs = new IntersectionObserver(e => {
-            e.forEach(x => { if (x.isIntersecting) { x.target.classList.add('vis'); obs.unobserve(x.target); }});
-        }, { threshold: 0.08 });
-        document.querySelectorAll('.rv').forEach(el => obs.observe(el));
-
-        // Filters
-        const fbtns = document.querySelectorAll('.fbtn');
-        const cards = document.querySelectorAll('.pcard[data-c]');
-        const cnt = document.getElementById('cnt');
-        const nores = document.getElementById('nores');
-        fbtns.forEach(b => b.addEventListener('click', () => {
-            fbtns.forEach(x => x.classList.remove('on'));
-            b.classList.add('on');
-            const f = b.dataset.f;
-            let n = 0;
-            cards.forEach(c => {
-                const ok = f === 'all' || (c.dataset.c || '').includes(f);
-                c.classList.toggle('hidden', !ok);
-                if (ok) n++;
-            });
-            cnt.textContent = n;
-            nores.classList.toggle('show', n === 0);
-        }));
-
-        // ═══ CUSTOM CURSOR ═══
-        const dot = document.getElementById('cursor-dot');
-        const ring = document.getElementById('cursor-ring');
-        const glow = document.getElementById('cursor-glow');
-        let mx = -100, my = -100, dx = -100, dy = -100, rx = -100, ry = -100, gx = -100, gy = -100;
-
-        const TRAIL_COUNT = 8;
-        const trails = [];
-        for (let i = 0; i < TRAIL_COUNT; i++) {
-            const t = document.createElement('div');
-            t.className = 'cursor-trail';
-            document.body.appendChild(t);
-            trails.push({ el: t, x: -100, y: -100 });
-        }
-
-        document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
-
-        const hoverables = 'a, button, .fbtn, .nav-link, .nav-cta, .nav-brand, .social-link-sm, .btn, .pcard-tag, .footer-link, .back-link, .pcard-link, .pcard';
-        document.addEventListener('mouseover', e => {
-            if (e.target.closest(hoverables)) ring.classList.add('hovering');
-        });
-        document.addEventListener('mouseout', e => {
-            if (e.target.closest(hoverables)) ring.classList.remove('hovering');
-        });
-
-        function animateCursor() {
-            dx += (mx - dx) * 0.65;
-            dy += (my - dy) * 0.65;
-            dot.style.transform = `translate(${dx - 2.5}px, ${dy - 2.5}px)`;
-
-            rx += (mx - rx) * 0.15;
-            ry += (my - ry) * 0.15;
-            ring.style.transform = `translate(${rx - ring.offsetWidth/2}px, ${ry - ring.offsetHeight/2}px)`;
-
-            gx += (mx - gx) * 0.08;
-            gy += (my - gy) * 0.08;
-            glow.style.transform = `translate(${gx - 200}px, ${gy - 200}px)`;
-
-            let prevX = dx, prevY = dy;
-            for (let i = 0; i < TRAIL_COUNT; i++) {
-                const t = trails[i];
-                const speed = 0.35 - (i * 0.03);
-                t.x += (prevX - t.x) * speed;
-                t.y += (prevY - t.y) * speed;
-                t.el.style.transform = `translate(${t.x - 2}px, ${t.y - 2}px)`;
-                t.el.style.opacity = (1 - i / TRAIL_COUNT) * 0.4;
-                t.el.style.width = t.el.style.height = (4 - i * 0.4) + 'px';
-                prevX = t.x;
-                prevY = t.y;
-            }
-            requestAnimationFrame(animateCursor);
-        }
-        animateCursor();
-
-        // ═══ TILT ON HOVER (project cards) ═══
-        document.querySelectorAll('.pcard').forEach(card => {
-            card.addEventListener('mousemove', e => {
-                const rect = card.getBoundingClientRect();
-                const x = (e.clientX - rect.left) / rect.width - 0.5;
-                const y = (e.clientY - rect.top) / rect.height - 0.5;
-                card.style.transform = `perspective(600px) rotateY(${x * 3}deg) rotateX(${-y * 3}deg)`;
-            });
-            card.addEventListener('mouseleave', () => {
-                card.style.transform = 'perspective(600px) rotateY(0) rotateX(0)';
-            });
-        });
-    </script>
+    <script src="mind.js?v=8" defer></script>
 </body>
 </html>
