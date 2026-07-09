@@ -542,10 +542,6 @@ const SCENES = {
                 { l: 'PyFirmata', s: 'serial' },
                 { l: 'Servos', s: '3 DOF' }
             ], 440);
-            [['θ1', 175, 440], ['θ2', 285, 275], ['θ3', 445, 325]].forEach(([t, x, y], i) => {
-                const tx = el('text', { x, y, class: 'ex-label pop', style: `--d:${0.8 + i * 0.15}s` }, g);
-                tx.textContent = t;
-            });
         }
     },
     vision: {

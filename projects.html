@@ -11,7 +11,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600&family=Space+Mono:wght@400;700&family=Syne:wght@500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css?v=8">
+    <link rel="stylesheet" href="styles.css?v=9">
 </head>
 <body>
 
@@ -73,26 +73,25 @@
             <div class="case-grid">
                 <div class="case-block rv">
                     <h3 class="mono">architecture</h3>
-                    <p>Camera and sonar streams are preprocessed on board, fed to a custom-trained YOLO
-                    detector, and published into the vehicle's ROS graph — where navigation and control
+                    <p>Camera streams are preprocessed on board, fed to a custom-trained YOLO
+                    detector, and published into the vehicle's ROS graph - where navigation and control
                     subsystems consume detections in real time.</p>
                 </div>
                 <div class="case-block rv">
                     <h3 class="mono">challenge</h3>
                     <p>Underwater perception is hostile: light distortion, turbidity, and colour loss break
-                    models trained on clean data — and everything must run within the latency budget of a
+                    models trained on clean data - and everything must run within the latency budget of a
                     live competition task, on the vehicle's own hardware.</p>
                 </div>
                 <div class="case-block rv">
                     <h3 class="mono">engineering decisions</h3>
                     <p>A domain-specific dataset annotated and versioned in Roboflow, with augmentation
-                    tuned for underwater distortion; sonar preprocessing to clean acoustic returns; and a
-                    modular ROS integration so perception evolves without touching control.</p>
+                    tuned for underwater distortion; a modular ROS integration so perception evolves without touching control.</p>
                 </div>
                 <div class="case-block rv">
                     <h3 class="mono">results</h3>
                     <p>A perception stack that runs in real time on board and has been exercised under
-                    real competition conditions at international AUV challenges.</p>
+                    real competition conditions at international AUV challenges like TAC challenge Norway and SAUVC Singapore.</p>
                 </div>
             </div>
         </article>
@@ -108,11 +107,11 @@
                 <div class="ex-visual">
                     <video class="ex-video" src="image/robarm.mp4" autoplay loop muted playsinline preload="metadata" aria-label="Gesture-controlled robotic arm tracking a human hand in real time"></video>
                     <svg class="ex-stage" viewBox="0 0 800 560" preserveAspectRatio="xMidYMid slice" aria-hidden="true"></svg>
-                    <span class="ex-index mono">demo — the arm mirroring the human hand</span>
+                    <span class="ex-index mono">demo - the arm mirroring the human hand</span>
                     <button class="ex-toggle mono" aria-pressed="false">engineering view</button>
                 </div>
                 <div class="ex-spec">
-                    <p class="ex-desc">Real-time hand tracking driving a 3-DOF manipulator end-to-end —
+                    <p class="ex-desc">Real-time hand tracking driving a 3-DOF manipulator end-to-end, 
                     from camera to MediaPipe landmark detection to joint-angle mapping to servo motion —
                     validated on physical hardware at Coratia Technologies.</p>
                     <dl class="ex-table mono">
@@ -133,7 +132,7 @@
                 <div class="case-block rv">
                     <h3 class="mono">challenge</h3>
                     <p>Raw hand landmarks are noisy, and servos amplify every jitter into visible shaking.
-                    The arm had to feel like a mirror of the hand — smooth, immediate, and stable on real
+                    The arm had to feel like a mirror of the hand - smooth, immediate, and stable on real
                     hardware, not just in a demo window.</p>
                 </div>
                 <div class="case-block rv">
@@ -175,7 +174,7 @@
                     <a class="ex-link mono" href="https://github.com/Eshaan0110/AUV-Mira" target="_blank" rel="noopener">view source ↗</a>
                 </div>
             </div>
-            <div class="case-grid">
+            <!-- <div class="case-grid">
                 <div class="case-block rv">
                     <h3 class="mono">architecture</h3>
                     <p>Dataset annotation and versioning in Roboflow with controlled splits; custom YOLO
@@ -200,12 +199,12 @@
                     stack and exercised under live competition conditions.</p>
                 </div>
             </div>
-        </article>
+        </article> -->
 
         <!-- ═══ CASE 04 · MPi ═══ -->
         <article class="case rv" id="mpi">
             <header class="case-head">
-                <span class="case-idx mono">PRJ 04 · complete</span>
+                <span class="case-idx mono">PRJ 03 · complete</span>
                 <h2 class="case-name">MPi — Market Intelligence</h2>
                 <p class="case-mission">Reading a nation's payment flows before they happen.</p>
             </header>
@@ -255,7 +254,7 @@
         </article>
 
         <!-- ═══ CASE 05 · DEEP LEARNING JOURNEY ═══ -->
-        <article class="case rv" id="dlj">
+        <!-- <article class="case rv" id="dlj">
             <header class="case-head">
                 <span class="case-idx mono">PRJ 05 · <span class="live">active</span></span>
                 <h2 class="case-name">Deep Learning Journey</h2>
@@ -302,12 +301,12 @@
                     learning — the foundation under the vision systems in this archive.</p>
                 </div>
             </div>
-        </article>
+        </article> -->
 
         <!-- ═══ CASE 06 · AGRI-MITRA ═══ -->
         <article class="case rv" id="agri">
             <header class="case-head">
-                <span class="case-idx mono">PRJ 06 · complete</span>
+                <span class="case-idx mono">PRJ 04 · complete</span>
                 <h2 class="case-name">Agri-Mitra — Smart India Hackathon</h2>
                 <p class="case-mission">Field intelligence for the people who feed us.</p>
             </header>
@@ -366,6 +365,6 @@
         </div>
     </footer>
 
-    <script src="mind.js?v=8" defer></script>
+    <script src="mind.js?v=9" defer></script>
 </body>
 </html>
