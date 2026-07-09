@@ -1,278 +1,464 @@
-/* ═══════════════════════════════════════════════════════════
-   mind.js — the engine behind the experience.
-   Signature interaction: a perspective engineering grid that
-   bends like fabric under the cursor. Signature content:
-   the Selected Work exhibition + engineering archive.
-   ═══════════════════════════════════════════════════════════ */
+/* ============================================================
+   mind.js — all the interactive behaviour for the portfolio.
+
+   Sections in this file:
+     1. Helpers & feature flags
+     2. Background "fabric" grid (bends under the cursor)
+     3. Scroll reveals + navigation bar behaviour
+     4. Hero text animation + name auto-fit
+     5. Custom cursor (dot + trailing ring)
+     6. About: interactive "evolution" graph
+     7. Project scene drawings (shared data + draw helpers)
+     8. Home page "Selected Work" preview switcher
+     9. Projects page "engineering archive" toggles
+    10. Experience tabs (Internships / Leadership)
+    11. Skills: curved wires from the core to each cluster
+    12. Experience: progress rail that fills on scroll
+
+   IMPORTANT: every number here (sizes, speeds, delays) is tuned
+   to match the visuals. Changing them changes how the site looks.
+   ============================================================ */
+
 (() => {
 'use strict';
 
-const REDUCED = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-const CAN_HOVER = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+/* ============================================================
+   1. HELPERS & FEATURE FLAGS
+   ============================================================ */
+
+// True if the visitor asked their OS to reduce animation.
+const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+// True on devices with a real mouse (so hover effects make sense).
+const hasMouse = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+
+// The grey used everywhere, written as "r, g, b" so we can drop it
+// straight into `rgba(...)` strings with any opacity.
 const GREY = '158, 162, 178';
-const SVGNS = 'http://www.w3.org/2000/svg';
+const SVG_NAMESPACE = 'http://www.w3.org/2000/svg';
 
-function el(tag, attrs, parent) {
-    const n = document.createElementNS(SVGNS, tag);
-    for (const k in attrs) n.setAttribute(k, attrs[k]);
-    if (parent) parent.appendChild(n);
-    return n;
+// Create an SVG element, set its attributes, and (optionally) append it
+// to a parent. Used by all the project drawings below.
+function createSvgElement(tagName, attributes, parent) {
+    const element = document.createElementNS(SVG_NAMESPACE, tagName);
+    for (const name in attributes) {
+        element.setAttribute(name, attributes[name]);
+    }
+    if (parent) {
+        parent.appendChild(element);
+    }
+    return element;
 }
 
-/* ───────────────────────────────────────────────
-   1 · THE FABRIC
-   A perspective engineering grid — a physical surface.
-   The cursor is nothing but a point; the world reacts.
-   ─────────────────────────────────────────────── */
-const field = document.getElementById('field');
 
-function gridRest(W, H) {
-    const SP = Math.max(54, Math.min(72, W / 22));
-    const rows = 20;
-    const cols = Math.ceil(W / (SP * 0.72)) + 2;
-    const verts = [];
-    for (let r = 0; r <= rows; r++) {
-        const t = r / rows;
-        const y = H * (0.02 + 0.98 * Math.pow(t, 1.28));
-        const fan = 0.74 + 0.36 * t;
-        for (let c = 0; c <= cols; c++) {
-            verts.push({ rx: W / 2 + (c - cols / 2) * SP * fan, ry: y });
+/* ============================================================
+   2. BACKGROUND "FABRIC" GRID
+   A perspective grid drawn on a full-screen canvas. Each line
+   crossing is a "point" connected to its resting spot by a
+   spring. The mouse pushes nearby points away, and the springs
+   pull them back — so the grid ripples like cloth.
+   ============================================================ */
+
+const fieldCanvas = document.getElementById('field');
+
+// Work out the resting position of every grid point for a given
+// screen size. Returns the points plus how many rows/columns there are.
+function buildGridPositions(screenWidth, screenHeight) {
+    const spacing = Math.max(54, Math.min(72, screenWidth / 22));
+    const rowCount = 20;
+    const columnCount = Math.ceil(screenWidth / (spacing * 0.72)) + 2;
+
+    const points = [];
+    for (let row = 0; row <= rowCount; row++) {
+        const rowFraction = row / rowCount;
+        // Rows bunch up near the top and spread out near the bottom (perspective).
+        const restingY = screenHeight * (0.02 + 0.98 * Math.pow(rowFraction, 1.28));
+        // Columns fan out slightly as they go down the screen.
+        const fan = 0.74 + 0.36 * rowFraction;
+        for (let column = 0; column <= columnCount; column++) {
+            points.push({
+                restingX: screenWidth / 2 + (column - columnCount / 2) * spacing * fan,
+                restingY: restingY
+            });
         }
     }
-    return { verts, rows, cols };
+    return { points, rowCount, columnCount };
 }
 
-if (field && !REDUCED) {
-    const ctx = field.getContext('2d');
-    const DPR = Math.min(window.devicePixelRatio || 1, 1.75);
-    const RANGE = 185, PULL = 1100, SPRING = 42, DAMP = 7.5;
-    let W = 0, H = 0, rows = 0, cols = 0, verts = [];
-    let running = true;
-    let mouse = { x: -9999, y: -9999 };
-    let last = performance.now();
+if (fieldCanvas && !prefersReducedMotion) {
+    // ---- Animated version (default) ----
+    const ctx = fieldCanvas.getContext('2d');
+    const pixelRatio = Math.min(window.devicePixelRatio || 1, 1.75);
 
-    function resize() {
-        W = window.innerWidth; H = window.innerHeight;
-        field.width = W * DPR; field.height = H * DPR;
-        ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
-        const g = gridRest(W, H);
-        rows = g.rows; cols = g.cols;
-        verts = g.verts.map(v => ({ ...v, x: v.rx, y: v.ry, vx: 0, vy: 0, d: 0 }));
+    const MOUSE_RANGE = 185;   // how close the mouse must be to push a point (px)
+    const PUSH_STRENGTH = 1100;
+    const SPRING_STRENGTH = 42; // how hard points are pulled back to rest
+    const DAMPING = 7.5;        // friction, so points settle instead of wobbling forever
+
+    let screenWidth = 0;
+    let screenHeight = 0;
+    let rowCount = 0;
+    let columnCount = 0;
+    let gridPoints = [];
+    let isRunning = true;
+    let mouse = { x: -9999, y: -9999 };  // off-screen until the mouse moves
+    let lastFrameTime = performance.now();
+
+    // Size the canvas to the window and rebuild the grid at rest.
+    function resizeGrid() {
+        screenWidth = window.innerWidth;
+        screenHeight = window.innerHeight;
+        fieldCanvas.width = screenWidth * pixelRatio;
+        fieldCanvas.height = screenHeight * pixelRatio;
+        ctx.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
+
+        const grid = buildGridPositions(screenWidth, screenHeight);
+        rowCount = grid.rowCount;
+        columnCount = grid.columnCount;
+        // Each point starts at its resting spot with zero velocity.
+        gridPoints = grid.points.map(point => ({
+            restingX: point.restingX,
+            restingY: point.restingY,
+            x: point.restingX,
+            y: point.restingY,
+            velocityX: 0,
+            velocityY: 0,
+            displacement: 0
+        }));
     }
-    resize();
-    window.addEventListener('resize', resize);
+    resizeGrid();
+    window.addEventListener('resize', resizeGrid);
 
-    window.addEventListener('mousemove', e => { mouse.x = e.clientX; mouse.y = e.clientY; }, { passive: true });
-    window.addEventListener('mouseout', e => { if (!e.relatedTarget) { mouse.x = -9999; mouse.y = -9999; } });
+    window.addEventListener('mousemove', event => {
+        mouse.x = event.clientX;
+        mouse.y = event.clientY;
+    }, { passive: true });
 
-    function frame(now) {
-        if (!running) return;
-        if (W !== window.innerWidth || H !== window.innerHeight) resize();
-        const dt = Math.min(0.04, (now - last) / 1000);
-        last = now;
-
-        for (const v of verts) {
-            let ax = (v.rx - v.x) * SPRING - v.vx * DAMP;
-            let ay = (v.ry - v.y) * SPRING - v.vy * DAMP;
-            const dx = mouse.x - v.x, dy = mouse.y - v.y;
-            const d = Math.hypot(dx, dy);
-            if (d < RANGE && d > 4) {
-                const f = PULL * Math.pow(1 - d / RANGE, 2) / d;
-                ax += dx * f;
-                ay += dy * f;
-            }
-            v.vx += ax * dt; v.vy += ay * dt;
-            v.x += v.vx * dt; v.y += v.vy * dt;
-            v.d = Math.hypot(v.x - v.rx, v.y - v.ry);
+    // When the mouse leaves the window, park it off-screen so the grid relaxes.
+    window.addEventListener('mouseout', event => {
+        if (!event.relatedTarget) {
+            mouse.x = -9999;
+            mouse.y = -9999;
         }
-
-        ctx.clearRect(0, 0, W, H);
-        ctx.lineWidth = 1;
-        const stride = cols + 1;
-        function segment(a, b) {
-            const bend = Math.min(14, a.d + b.d);
-            ctx.strokeStyle = `rgba(${GREY}, ${0.07 + bend * 0.016})`;
-            ctx.beginPath();
-            ctx.moveTo(a.x, a.y);
-            ctx.lineTo(b.x, b.y);
-            ctx.stroke();
-        }
-        for (let r = 0; r <= rows; r++)
-            for (let c = 0; c < cols; c++)
-                segment(verts[r * stride + c], verts[r * stride + c + 1]);
-        for (let c = 0; c <= cols; c++)
-            for (let r = 0; r < rows; r++)
-                segment(verts[r * stride + c], verts[(r + 1) * stride + c]);
-
-        requestAnimationFrame(frame);
-    }
-    requestAnimationFrame(frame);
-
-    document.addEventListener('visibilitychange', () => {
-        const was = running;
-        running = !document.hidden;
-        if (running && !was) { last = performance.now(); requestAnimationFrame(frame); }
     });
-} else if (field && REDUCED) {
-    const ctx = field.getContext('2d');
-    const W = window.innerWidth, H = window.innerHeight;
-    field.width = W; field.height = H;
-    const g = gridRest(W, H);
-    const stride = g.cols + 1;
+
+    // Draw one line segment between two points. Lines that are bent
+    // away from rest are drawn slightly brighter.
+    function drawSegment(pointA, pointB) {
+        const bend = Math.min(14, pointA.displacement + pointB.displacement);
+        ctx.strokeStyle = `rgba(${GREY}, ${0.07 + bend * 0.016})`;
+        ctx.beginPath();
+        ctx.moveTo(pointA.x, pointA.y);
+        ctx.lineTo(pointB.x, pointB.y);
+        ctx.stroke();
+    }
+
+    // One animation frame: update the physics, then redraw the grid.
+    function renderGridFrame(now) {
+        if (!isRunning) return;
+
+        // If the window changed size between frames, rebuild first.
+        if (screenWidth !== window.innerWidth || screenHeight !== window.innerHeight) {
+            resizeGrid();
+        }
+
+        // Seconds since the last frame, capped so a long pause can't "explode" the spring.
+        const deltaTime = Math.min(0.04, (now - lastFrameTime) / 1000);
+        lastFrameTime = now;
+
+        // --- physics: move every point ---
+        for (const point of gridPoints) {
+            // Spring pulling the point back to its resting spot, minus friction.
+            let accelX = (point.restingX - point.x) * SPRING_STRENGTH - point.velocityX * DAMPING;
+            let accelY = (point.restingY - point.y) * SPRING_STRENGTH - point.velocityY * DAMPING;
+
+            // Extra push away from the mouse if it's close enough.
+            const toMouseX = mouse.x - point.x;
+            const toMouseY = mouse.y - point.y;
+            const distance = Math.hypot(toMouseX, toMouseY);
+            if (distance < MOUSE_RANGE && distance > 4) {
+                const falloff = Math.pow(1 - distance / MOUSE_RANGE, 2);
+                const force = PUSH_STRENGTH * falloff / distance;
+                accelX += toMouseX * force;
+                accelY += toMouseY * force;
+            }
+
+            point.velocityX += accelX * deltaTime;
+            point.velocityY += accelY * deltaTime;
+            point.x += point.velocityX * deltaTime;
+            point.y += point.velocityY * deltaTime;
+            point.displacement = Math.hypot(point.x - point.restingX, point.y - point.restingY);
+        }
+
+        // --- draw: horizontal lines, then vertical lines ---
+        ctx.clearRect(0, 0, screenWidth, screenHeight);
+        ctx.lineWidth = 1;
+        const pointsPerRow = columnCount + 1;
+
+        for (let row = 0; row <= rowCount; row++) {
+            for (let column = 0; column < columnCount; column++) {
+                const index = row * pointsPerRow + column;
+                drawSegment(gridPoints[index], gridPoints[index + 1]);
+            }
+        }
+        for (let column = 0; column <= columnCount; column++) {
+            for (let row = 0; row < rowCount; row++) {
+                const index = row * pointsPerRow + column;
+                drawSegment(gridPoints[index], gridPoints[index + pointsPerRow]);
+            }
+        }
+
+        requestAnimationFrame(renderGridFrame);
+    }
+    requestAnimationFrame(renderGridFrame);
+
+    // Pause the animation when the tab is hidden; resume when it returns.
+    document.addEventListener('visibilitychange', () => {
+        const wasRunning = isRunning;
+        isRunning = !document.hidden;
+        if (isRunning && !wasRunning) {
+            lastFrameTime = performance.now();
+            requestAnimationFrame(renderGridFrame);
+        }
+    });
+
+} else if (fieldCanvas && prefersReducedMotion) {
+    // ---- Static version (reduced motion): draw the grid once, no animation ----
+    const ctx = fieldCanvas.getContext('2d');
+    const screenWidth = window.innerWidth;
+    const screenHeight = window.innerHeight;
+    fieldCanvas.width = screenWidth;
+    fieldCanvas.height = screenHeight;
+
+    const grid = buildGridPositions(screenWidth, screenHeight);
+    const pointsPerRow = grid.columnCount + 1;
     ctx.strokeStyle = `rgba(${GREY}, 0.06)`;
     ctx.lineWidth = 1;
     ctx.beginPath();
-    for (let r = 0; r <= g.rows; r++) {
-        ctx.moveTo(g.verts[r * stride].rx, g.verts[r * stride].ry);
-        for (let c = 1; c <= g.cols; c++) ctx.lineTo(g.verts[r * stride + c].rx, g.verts[r * stride + c].ry);
+
+    // Horizontal lines.
+    for (let row = 0; row <= grid.rowCount; row++) {
+        const start = grid.points[row * pointsPerRow];
+        ctx.moveTo(start.restingX, start.restingY);
+        for (let column = 1; column <= grid.columnCount; column++) {
+            const point = grid.points[row * pointsPerRow + column];
+            ctx.lineTo(point.restingX, point.restingY);
+        }
     }
-    for (let c = 0; c <= g.cols; c++) {
-        ctx.moveTo(g.verts[c].rx, g.verts[c].ry);
-        for (let r = 1; r <= g.rows; r++) ctx.lineTo(g.verts[r * stride + c].rx, g.verts[r * stride + c].ry);
+    // Vertical lines.
+    for (let column = 0; column <= grid.columnCount; column++) {
+        const start = grid.points[column];
+        ctx.moveTo(start.restingX, start.restingY);
+        for (let row = 1; row <= grid.rowCount; row++) {
+            const point = grid.points[row * pointsPerRow + column];
+            ctx.lineTo(point.restingX, point.restingY);
+        }
     }
     ctx.stroke();
 }
 
-/* ───────────────────────────────────────────────
-   2 · REVEALS + NAV
-   ─────────────────────────────────────────────── */
-const obs = new IntersectionObserver(entries => {
-    entries.forEach(e => {
-        if (e.isIntersecting) { e.target.classList.add('vis'); obs.unobserve(e.target); }
-    });
+
+/* ============================================================
+   3. SCROLL REVEALS + NAVIGATION BAR
+   ============================================================ */
+
+// Fade/slide elements in the first time they scroll into view.
+// (Any element with class "rv", plus the about graph and timeline items.)
+const revealObserver = new IntersectionObserver((entries) => {
+    for (const entry of entries) {
+        if (entry.isIntersecting) {
+            entry.target.classList.add('vis');
+            revealObserver.unobserve(entry.target);  // only reveal once
+        }
+    }
 }, { threshold: 0.12, rootMargin: '0px 0px -50px 0px' });
-document.querySelectorAll('.rv, .evolution, .gevent').forEach(n => obs.observe(n));
 
-const nav = document.getElementById('nav');
-if (nav) {
-    let lastY = 0;
-    window.addEventListener('scroll', () => {
-        const y = window.scrollY;
-        nav.classList.toggle('hidden', y > lastY && y > 140);
-        lastY = y;
-    }, { passive: true });
-}
-
-const navLinks = document.querySelectorAll('.nav-link');
-const navSections = document.querySelectorAll('section[id]');
-if (navLinks.length && navSections.length) {
-    const secObs = new IntersectionObserver(entries => {
-        entries.forEach(e => {
-            if (e.isIntersecting) {
-                navLinks.forEach(l => l.classList.toggle('active', l.getAttribute('href') === '#' + e.target.id));
-            }
-        });
-    }, { rootMargin: '-40% 0px -55% 0px' });
-    navSections.forEach(s => secObs.observe(s));
-}
-
-/* ───────────────────────────────────────────────
-   3 · HERO — perceive / reason / interact come alive,
-   and the portrait reveals its edges under observation
-   ─────────────────────────────────────────────── */
-document.querySelectorAll('.vital').forEach(v => {
-    const order = parseInt(v.dataset.v, 10) || 1;
-    setTimeout(() => v.classList.add('on'), 900 + order * 450);
+document.querySelectorAll('.rv, .evolution, .gevent').forEach((element) => {
+    revealObserver.observe(element);
 });
 
-// the name fills its column edge-to-edge, poster style:
-// the longest line sets the size, shorter lines letter-space to match
-const nameEl = document.querySelector('.hero-name');
-if (nameEl) {
-    const lines = [...nameEl.querySelectorAll('.hn-line')];
-    const inkWidth = l => {                      // true text width, not the block box
-        const range = document.createRange();
-        range.selectNodeContents(l);
-        return range.getBoundingClientRect().width;
-    };
-    function fitName() {
-        if (!lines.length) return;
-        nameEl.style.fontSize = '';
-        const W = nameEl.clientWidth;
-        if (W < 80) return;
-        const fs = parseFloat(getComputedStyle(nameEl).fontSize);
-        const maxW = Math.max(...lines.map(inkWidth));
-        if (maxW < 10) return;
-        nameEl.style.fontSize = (fs * W / maxW * 0.995) + 'px';
-    }
-    const refit = () => requestAnimationFrame(fitName);
-    refit();
-    if (document.fonts && document.fonts.ready) document.fonts.ready.then(refit);
-    window.addEventListener('load', refit);
-    let fnT;
-    window.addEventListener('resize', () => { clearTimeout(fnT); fnT = setTimeout(fitName, 120); });
+// Hide the nav bar when scrolling down, show it when scrolling up.
+const navBar = document.getElementById('nav');
+if (navBar) {
+    let previousScrollY = 0;
+    window.addEventListener('scroll', () => {
+        const currentScrollY = window.scrollY;
+        const scrollingDown = currentScrollY > previousScrollY;
+        const pastTop = currentScrollY > 140;
+        navBar.classList.toggle('hidden', scrollingDown && pastTop);
+        previousScrollY = currentScrollY;
+    }, { passive: true });
 }
 
-/* ───────────────────────────────────────────────
-   3b · CURSOR — a precision instrument.
-   A lime point with a thin ring trailing on inertia;
-   the ring locks onto anything interactive.
-   ─────────────────────────────────────────────── */
-if (CAN_HOVER && !REDUCED) {
-    const dot = document.createElement('div');
-    dot.id = 'cursor-dot';
-    const ring = document.createElement('div');
-    ring.id = 'cursor-ring';
-    document.body.append(dot, ring);
+// Highlight the nav link for whichever section is currently on screen.
+const navLinks = document.querySelectorAll('.nav-link');
+const pageSections = document.querySelectorAll('section[id]');
+if (navLinks.length && pageSections.length) {
+    const sectionObserver = new IntersectionObserver((entries) => {
+        for (const entry of entries) {
+            if (!entry.isIntersecting) continue;
+            const activeHref = '#' + entry.target.id;
+            navLinks.forEach((link) => {
+                link.classList.toggle('active', link.getAttribute('href') === activeHref);
+            });
+        }
+    }, { rootMargin: '-40% 0px -55% 0px' });
+
+    pageSections.forEach((section) => sectionObserver.observe(section));
+}
+
+
+/* ============================================================
+   4. HERO TEXT
+   ============================================================ */
+
+// Light up "perceive", "reason", "interact" one after another.
+document.querySelectorAll('.vital').forEach((word) => {
+    const order = parseInt(word.dataset.v, 10) || 1;
+    const delay = 900 + order * 450;
+    setTimeout(() => word.classList.add('on'), delay);
+});
+
+// Scale the big name so the longest line exactly fills its column width.
+const heroName = document.querySelector('.hero-name');
+if (heroName) {
+    const nameLines = [...heroName.querySelectorAll('.hn-line')];
+
+    // Measure the real width of the text inside a line (not the full box).
+    function measureTextWidth(lineElement) {
+        const range = document.createRange();
+        range.selectNodeContents(lineElement);
+        return range.getBoundingClientRect().width;
+    }
+
+    function fitNameToColumn() {
+        if (!nameLines.length) return;
+
+        heroName.style.fontSize = '';  // reset to the CSS default before measuring
+        const columnWidth = heroName.clientWidth;
+        if (columnWidth < 80) return;
+
+        const baseFontSize = parseFloat(getComputedStyle(heroName).fontSize);
+        const widestLine = Math.max(...nameLines.map(measureTextWidth));
+        if (widestLine < 10) return;
+
+        // Grow/shrink the font so the widest line ≈ the column width.
+        heroName.style.fontSize = (baseFontSize * columnWidth / widestLine * 0.995) + 'px';
+    }
+
+    // Re-fit after the next paint, after fonts load, and on window load.
+    const refit = () => requestAnimationFrame(fitNameToColumn);
+    refit();
+    if (document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(refit);
+    }
+    window.addEventListener('load', refit);
+
+    // Re-fit on resize, but wait until the user stops dragging (debounce).
+    let resizeTimer;
+    window.addEventListener('resize', () => {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(fitNameToColumn, 120);
+    });
+}
+
+
+/* ============================================================
+   5. CUSTOM CURSOR
+   A small lime dot that tracks the mouse exactly, plus a ring
+   that lags behind for an inertia feel and grows when hovering
+   something clickable. Only on devices with a real mouse.
+   ============================================================ */
+
+if (hasMouse && !prefersReducedMotion) {
+    const cursorDot = document.createElement('div');
+    cursorDot.id = 'cursor-dot';
+    const cursorRing = document.createElement('div');
+    cursorRing.id = 'cursor-ring';
+    document.body.append(cursorDot, cursorRing);
     document.body.classList.add('has-cursor');
 
-    let mx = -100, my = -100, rx = -100, ry = -100, shown = false;
-    document.addEventListener('mousemove', e => {
-        mx = e.clientX; my = e.clientY;
-        if (!shown) { shown = true; dot.style.opacity = '1'; ring.style.opacity = '1'; }
+    let mouseX = -100;
+    let mouseY = -100;
+    let ringX = -100;
+    let ringY = -100;
+    let cursorShown = false;
+
+    document.addEventListener('mousemove', (event) => {
+        mouseX = event.clientX;
+        mouseY = event.clientY;
+        if (!cursorShown) {
+            cursorShown = true;
+            cursorDot.style.opacity = '1';
+            cursorRing.style.opacity = '1';
+        }
     }, { passive: true });
+
     document.addEventListener('mouseleave', () => {
-        shown = false; dot.style.opacity = '0'; ring.style.opacity = '0';
+        cursorShown = false;
+        cursorDot.style.opacity = '0';
+        cursorRing.style.opacity = '0';
     });
 
-    const HOT = 'a, button, .sw-item, .cap-node, .tab-btn, .ex-toggle, .ex-visual, [role="button"]';
-    document.addEventListener('mouseover', e => { if (e.target.closest(HOT)) ring.classList.add('lock'); });
-    document.addEventListener('mouseout', e => { if (e.target.closest(HOT)) ring.classList.remove('lock'); });
-    document.addEventListener('mousedown', () => ring.classList.add('press'));
-    document.addEventListener('mouseup', () => ring.classList.remove('press'));
+    // Elements that should make the ring "lock on" (grow + turn lime).
+    const CLICKABLE_SELECTOR = 'a, button, .sw-item, .cap-node, .tab-btn, .ex-toggle, .ex-visual, [role="button"]';
+    document.addEventListener('mouseover', (event) => {
+        if (event.target.closest(CLICKABLE_SELECTOR)) cursorRing.classList.add('lock');
+    });
+    document.addEventListener('mouseout', (event) => {
+        if (event.target.closest(CLICKABLE_SELECTOR)) cursorRing.classList.remove('lock');
+    });
+    document.addEventListener('mousedown', () => cursorRing.classList.add('press'));
+    document.addEventListener('mouseup', () => cursorRing.classList.remove('press'));
 
-    (function follow() {
-        rx += (mx - rx) * 0.18;
-        ry += (my - ry) * 0.18;
-        dot.style.transform = `translate(${mx}px, ${my}px)`;
-        ring.style.transform = `translate(${rx}px, ${ry}px)`;
-        requestAnimationFrame(follow);
-    })();
+    // The dot snaps to the mouse; the ring eases toward it (18% per frame).
+    function moveCursor() {
+        ringX += (mouseX - ringX) * 0.18;
+        ringY += (mouseY - ringY) * 0.18;
+        cursorDot.style.transform = `translate(${mouseX}px, ${mouseY}px)`;
+        cursorRing.style.transform = `translate(${ringX}px, ${ringY}px)`;
+        requestAnimationFrame(moveCursor);
+    }
+    moveCursor();
 }
 
-/* ───────────────────────────────────────────────
-   3c · EVOLUTION GRAPH (interactive)
-   The same idea — curiosity branching into a practice —
-   but now a draggable force-directed graph with springy
-   physics, instead of a static drawing. Three colours
-   only: black, lime, grey. Curiosity is the lit root.
-   ─────────────────────────────────────────────── */
-(function evolutionGraph() {
+
+/* ============================================================
+   6. ABOUT — INTERACTIVE "EVOLUTION" GRAPH
+   A small force-directed graph on its own canvas. Nodes repel
+   each other, edges act like springs, and a gentle pull keeps
+   everything centred. You can drag nodes and hover for details.
+   "Curiosity" is the root and is always lit.
+   ============================================================ */
+
+(function setUpEvolutionGraph() {
     const canvas = document.getElementById('evo-net');
     if (!canvas) return;
+
     const ctx = canvas.getContext('2d');
     const wrap = document.getElementById('evo-wrap');
-    const detail = document.getElementById('net-detail');
-    const dKicker = document.getElementById('net-kicker');
-    const dTitle = document.getElementById('net-title');
-    const dDesc = document.getElementById('net-desc');
+    const detailBox = document.getElementById('net-detail');
+    const detailKicker = document.getElementById('net-kicker');
+    const detailTitle = document.getElementById('net-title');
+    const detailDesc = document.getElementById('net-desc');
 
-    const LIME = (getComputedStyle(document.documentElement).getPropertyValue('--lime') || '#c6f135').trim();
-    const GREY = '158, 162, 178';
-    const BG = (getComputedStyle(document.documentElement).getPropertyValue('--bg') || '#040405').trim();
+    const rootStyles = getComputedStyle(document.documentElement);
+    const LIME = (rootStyles.getPropertyValue('--lime') || '#c6f135').trim();
+    const GRAPH_GREY = '158, 162, 178';
+    const BG = (rootStyles.getPropertyValue('--bg') || '#040405').trim();
 
-    // the evolution: one idea → a practice. root = Curiosity (lit).
-    const NODES = [
-        { id: 'curiosity',  title: 'Curiosity',       kicker: 'WHERE IT STARTS', desc: 'How could a machine understand the world? Every branch below grew from that one question.', size: 13, root: true },
-        { id: 'programming', title: 'Programming',    kicker: 'THE FIRST TOOL',  desc: 'Curiosity turned into code — the language for building things that think.', size: 11 },
-        { id: 'robotics',   title: 'Robotics',        kicker: 'CODE MEETS WORLD', desc: 'Software reached into hardware — perception, control, and motion in the physical world.', size: 12 },
-        { id: 'leadership', title: 'Leadership',      kicker: 'PEOPLE SYSTEMS',  desc: 'The same systems instinct, applied to teams — leading, mentoring, building communities.', size: 9 },
-        { id: 'cv',         title: 'Computer Vision', kicker: 'BRANCH',          desc: 'Teaching machines to see — detection, tracking, perception in degraded environments.', size: 10 },
-        { id: 'autonomy',   title: 'Autonomy',        kicker: 'BRANCH',          desc: 'Systems that decide and act on their own — from underwater vehicles to control loops.', size: 9 },
-        { id: 'ml',         title: 'Machine Learning', kicker: 'BRANCH',         desc: 'Models that learn from data — from neural nets built by hand to applied forecasting.', size: 10 },
-        { id: 'research',   title: 'Research',        kicker: 'BRANCH',          desc: 'Published work in 6D pose estimation and medical image segmentation — IEEE & Elsevier.', size: 9 }
+    // The nodes. `root: true` marks "Curiosity" as the always-lit origin.
+    const NODE_DATA = [
+        { id: 'curiosity',   title: 'Curiosity',        kicker: 'WHERE IT STARTS',  desc: 'How could a machine understand the world? Every branch below grew from that one question.', size: 13, root: true },
+        { id: 'programming', title: 'Programming',      kicker: 'THE FIRST TOOL',   desc: 'Curiosity turned into code — the language for building things that think.', size: 11 },
+        { id: 'robotics',    title: 'Robotics',         kicker: 'CODE MEETS WORLD', desc: 'Software reached into hardware — perception, control, and motion in the physical world.', size: 12 },
+        { id: 'leadership',  title: 'Leadership',       kicker: 'PEOPLE SYSTEMS',   desc: 'The same systems instinct, applied to teams — leading, mentoring, building communities.', size: 9 },
+        { id: 'cv',          title: 'Computer Vision',  kicker: 'BRANCH',           desc: 'Teaching machines to see — detection, tracking, perception in degraded environments.', size: 10 },
+        { id: 'autonomy',    title: 'Autonomy',         kicker: 'BRANCH',           desc: 'Systems that decide and act on their own — from underwater vehicles to control loops.', size: 9 },
+        { id: 'ml',          title: 'Machine Learning', kicker: 'BRANCH',           desc: 'Models that learn from data — from neural nets built by hand to applied forecasting.', size: 10 },
+        { id: 'research',    title: 'Research',         kicker: 'BRANCH',           desc: 'Published work in 6D pose estimation and medical image segmentation — IEEE & Elsevier.', size: 9 }
     ];
-    const EDGES = [
+    // Which nodes are connected. The last two are cross-links between disciplines.
+    const EDGE_DATA = [
         ['curiosity', 'programming'],
         ['programming', 'robotics'],
         ['programming', 'leadership'],
@@ -280,262 +466,431 @@ if (CAN_HOVER && !REDUCED) {
         ['robotics', 'autonomy'],
         ['robotics', 'ml'],
         ['robotics', 'research'],
-        ['cv', 'ml'],            // the disciplines cross-pollinate
+        ['cv', 'ml'],
         ['cv', 'autonomy']
     ];
 
-    let W = 0, H = 0, DPR = 1;
-    function resize() {
-        DPR = Math.min(window.devicePixelRatio || 1, 2);
-        W = canvas.clientWidth; H = canvas.clientHeight;
-        canvas.width = W * DPR; canvas.height = H * DPR;
-        ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+    let width = 0;
+    let height = 0;
+    let pixelRatio = 1;
+
+    function resizeCanvas() {
+        pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
+        width = canvas.clientWidth;
+        height = canvas.clientHeight;
+        canvas.width = width * pixelRatio;
+        canvas.height = height * pixelRatio;
+        ctx.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
     }
-    const nodes = NODES.map((b, i) => {
-        const a = (i / NODES.length) * Math.PI * 2;
-        return { ...b, x: Math.cos(a), y: Math.sin(a), vx: 0, vy: 0,
-                 fixed: false, phase: Math.random() * 6.28, phaseSpd: 0.016 + Math.random() * 0.012 };
+
+    // Turn the plain data into live nodes (start spread around a circle).
+    const nodes = NODE_DATA.map((data, index) => {
+        const angle = (index / NODE_DATA.length) * Math.PI * 2;
+        return {
+            ...data,
+            x: Math.cos(angle),
+            y: Math.sin(angle),
+            velocityX: 0,
+            velocityY: 0,
+            isHeld: false,                              // true while being dragged
+            wobblePhase: Math.random() * 6.28,         // for the gentle idle drift
+            wobbleSpeed: 0.016 + Math.random() * 0.012
+        };
     });
-    const byId = Object.fromEntries(nodes.map(n => [n.id, n]));
-    function seed() {
-        for (const n of nodes) {
-            const a = Math.atan2(n.y || 0.01, n.x || 0.01);
-            const r = n.root ? 0 : Math.min(W, H) * 0.3;
-            n.x = W / 2 + Math.cos(a) * r + (Math.random() - 0.5) * 24;
-            n.y = H / 2 + Math.sin(a) * r + (Math.random() - 0.5) * 24;
+    const nodesById = Object.fromEntries(nodes.map((node) => [node.id, node]));
+
+    // Place nodes: the root in the centre, the rest on a ring around it.
+    function seedPositions() {
+        for (const node of nodes) {
+            const angle = Math.atan2(node.y || 0.01, node.x || 0.01);
+            const radius = node.root ? 0 : Math.min(width, height) * 0.3;
+            node.x = width / 2 + Math.cos(angle) * radius + (Math.random() - 0.5) * 24;
+            node.y = height / 2 + Math.sin(angle) * radius + (Math.random() - 0.5) * 24;
         }
     }
-    resize(); seed();
-    new ResizeObserver(() => { const had = W; resize(); if (!had && W) seed(); }).observe(wrap);
+    resizeCanvas();
+    seedPositions();
 
-    const REPEL = 4600, SPRING = 0.012, SPRING_LEN = 84, DAMPING = 0.88, CENTER_PULL = 0.0014;
-    let dragging = null, hovered = null;
+    // Re-seed once the wrap first gets a real size (it starts at 0 wide).
+    new ResizeObserver(() => {
+        const hadSize = width;
+        resizeCanvas();
+        if (!hadSize && width) seedPositions();
+    }).observe(wrap);
 
-    function pos(e) {
-        const r = canvas.getBoundingClientRect();
-        const p = e.touches ? e.touches[0] : e;
-        return { x: p.clientX - r.left, y: p.clientY - r.top };
+    // Physics tuning.
+    const REPULSION = 4600;     // how strongly nodes push apart
+    const EDGE_SPRING = 0.012;  // how strongly edges pull connected nodes
+    const EDGE_LENGTH = 84;     // the spring's natural length
+    const FRICTION = 0.88;      // velocity kept each frame (lower = more drag)
+    const CENTER_PULL = 0.0014; // gentle pull back toward the middle
+
+    let draggedNode = null;
+    let hoveredNode = null;
+
+    // Convert a mouse/touch event into x,y relative to the canvas.
+    function pointerPosition(event) {
+        const bounds = canvas.getBoundingClientRect();
+        const source = event.touches ? event.touches[0] : event;
+        return { x: source.clientX - bounds.left, y: source.clientY - bounds.top };
     }
-    function pick(mx, my) {
+
+    // Find the node under a point, if any (search topmost first).
+    function nodeAt(x, y) {
         for (let i = nodes.length - 1; i >= 0; i--) {
-            const n = nodes[i], dx = n.x - mx, dy = n.y - my, pad = n.size + 8;
-            if (dx * dx + dy * dy <= pad * pad) return n;
+            const node = nodes[i];
+            const dx = node.x - x;
+            const dy = node.y - y;
+            const reach = node.size + 8;
+            if (dx * dx + dy * dy <= reach * reach) return node;
         }
         return null;
     }
-    function showDetail(n) {
-        dKicker.textContent = n.kicker;
-        dTitle.textContent = n.title;
-        dDesc.textContent = n.desc;
-        detail.classList.add('on');
-        detail.setAttribute('aria-hidden', 'false');
-        moveDetail(n);
-    }
-    function hideDetail() { detail.classList.remove('on'); detail.setAttribute('aria-hidden', 'true'); }
-    function moveDetail(n) {
-        const w = detail.offsetWidth || 220, h = detail.offsetHeight || 88;
-        let x = n.x + 18, y = n.y + 18;
-        if (x + w > W) x = n.x - w - 18;
-        if (y + h > H) y = H - h - 6;
-        detail.style.left = Math.max(4, x) + 'px';
-        detail.style.top = Math.max(4, y) + 'px';
+
+    function showDetail(node) {
+        detailKicker.textContent = node.kicker;
+        detailTitle.textContent = node.title;
+        detailDesc.textContent = node.desc;
+        detailBox.classList.add('on');
+        detailBox.setAttribute('aria-hidden', 'false');
+        positionDetail(node);
     }
 
-    canvas.addEventListener('mousedown', e => {
-        const { x, y } = pos(e);
-        dragging = pick(x, y);
-        if (dragging) dragging.fixed = true;
+    function hideDetail() {
+        detailBox.classList.remove('on');
+        detailBox.setAttribute('aria-hidden', 'true');
+    }
+
+    // Put the detail card next to the node, nudged to stay inside the canvas.
+    function positionDetail(node) {
+        const boxWidth = detailBox.offsetWidth || 220;
+        const boxHeight = detailBox.offsetHeight || 88;
+        let x = node.x + 18;
+        let y = node.y + 18;
+        if (x + boxWidth > width) x = node.x - boxWidth - 18;
+        if (y + boxHeight > height) y = height - boxHeight - 6;
+        detailBox.style.left = Math.max(4, x) + 'px';
+        detailBox.style.top = Math.max(4, y) + 'px';
+    }
+
+    // ---- Mouse input ----
+    canvas.addEventListener('mousedown', (event) => {
+        const point = pointerPosition(event);
+        draggedNode = nodeAt(point.x, point.y);
+        if (draggedNode) draggedNode.isHeld = true;
     });
-    window.addEventListener('mousemove', e => {
-        if (!W) return;
-        const { x, y } = pos(e);
-        if (dragging) {
-            dragging.vx += (x - dragging.x) * 0.35;
-            dragging.vy += (y - dragging.y) * 0.35;
-            if (hovered) moveDetail(hovered);
+
+    window.addEventListener('mousemove', (event) => {
+        if (!width) return;
+        const point = pointerPosition(event);
+
+        if (draggedNode) {
+            // Pull the held node toward the cursor.
+            draggedNode.velocityX += (point.x - draggedNode.x) * 0.35;
+            draggedNode.velocityY += (point.y - draggedNode.y) * 0.35;
+            if (hoveredNode) positionDetail(hoveredNode);
             return;
         }
-        const h = pick(x, y);
-        if (h !== hovered) { hovered = h; h ? showDetail(h) : hideDetail(); }
-        else if (h) moveDetail(h);
-    }, { passive: true });
-    window.addEventListener('mouseup', () => { if (dragging) { dragging.fixed = false; dragging = null; } });
-    canvas.addEventListener('touchstart', e => {
-        e.preventDefault();
-        const { x, y } = pos(e);
-        dragging = pick(x, y);
-        if (dragging) { dragging.fixed = true; hovered = dragging; showDetail(dragging); }
-    }, { passive: false });
-    canvas.addEventListener('touchmove', e => {
-        e.preventDefault();
-        if (!dragging) return;
-        const { x, y } = pos(e);
-        dragging.vx += (x - dragging.x) * 0.35;
-        dragging.vy += (y - dragging.y) * 0.35;
-        moveDetail(dragging);
-    }, { passive: false });
-    canvas.addEventListener('touchend', () => { if (dragging) dragging.fixed = false; dragging = null; setTimeout(hideDetail, 1600); });
 
-    let frame = 0, cooldown = 70, running = true;
-    function step() {
-        frame++;
-        if (!REDUCED) {
-            cooldown--;
-            if (cooldown <= 0 && !dragging) {
-                const free = nodes.filter(n => !n.fixed);
-                if (free.length) { const t = free[(Math.random() * free.length) | 0], a = Math.random() * 6.28, m = 0.3 + Math.random() * 0.7; t.vx += Math.cos(a) * m; t.vy += Math.sin(a) * m; }
-                cooldown = 50 + (Math.random() * 80 | 0);
+        // Not dragging: update which node is hovered.
+        const nodeUnderCursor = nodeAt(point.x, point.y);
+        if (nodeUnderCursor !== hoveredNode) {
+            hoveredNode = nodeUnderCursor;
+            if (hoveredNode) showDetail(hoveredNode);
+            else hideDetail();
+        } else if (nodeUnderCursor) {
+            positionDetail(nodeUnderCursor);
+        }
+    }, { passive: true });
+
+    window.addEventListener('mouseup', () => {
+        if (draggedNode) {
+            draggedNode.isHeld = false;
+            draggedNode = null;
+        }
+    });
+
+    // ---- Touch input ----
+    canvas.addEventListener('touchstart', (event) => {
+        event.preventDefault();
+        const point = pointerPosition(event);
+        draggedNode = nodeAt(point.x, point.y);
+        if (draggedNode) {
+            draggedNode.isHeld = true;
+            hoveredNode = draggedNode;
+            showDetail(draggedNode);
+        }
+    }, { passive: false });
+
+    canvas.addEventListener('touchmove', (event) => {
+        event.preventDefault();
+        if (!draggedNode) return;
+        const point = pointerPosition(event);
+        draggedNode.velocityX += (point.x - draggedNode.x) * 0.35;
+        draggedNode.velocityY += (point.y - draggedNode.y) * 0.35;
+        positionDetail(draggedNode);
+    }, { passive: false });
+
+    canvas.addEventListener('touchend', () => {
+        if (draggedNode) draggedNode.isHeld = false;
+        draggedNode = null;
+        setTimeout(hideDetail, 1600);
+    });
+
+    // ---- Physics step ----
+    let frameCount = 0;
+    let nudgeCooldown = 70;  // frames until the next random "keep it alive" nudge
+    let isRunning = true;
+
+    function stepPhysics() {
+        frameCount++;
+
+        // Every so often, give a random free node a tiny shove so the graph
+        // never goes completely still.
+        if (!prefersReducedMotion) {
+            nudgeCooldown--;
+            if (nudgeCooldown <= 0 && !draggedNode) {
+                const freeNodes = nodes.filter((node) => !node.isHeld);
+                if (freeNodes.length) {
+                    const target = freeNodes[Math.floor(Math.random() * freeNodes.length)];
+                    const angle = Math.random() * 6.28;
+                    const strength = 0.3 + Math.random() * 0.7;
+                    target.velocityX += Math.cos(angle) * strength;
+                    target.velocityY += Math.sin(angle) * strength;
+                }
+                nudgeCooldown = 50 + Math.floor(Math.random() * 80);
             }
         }
+
+        // Repulsion: every pair of nodes pushes apart.
         for (let i = 0; i < nodes.length; i++) {
             for (let j = i + 1; j < nodes.length; j++) {
-                const a = nodes[i], b = nodes[j];
-                let dx = b.x - a.x, dy = b.y - a.y, d2 = dx * dx + dy * dy || 1;
-                const d = Math.sqrt(d2), f = REPEL / d2, fx = dx / d * f, fy = dy / d * f;
-                if (!a.fixed) { a.vx -= fx; a.vy -= fy; }
-                if (!b.fixed) { b.vx += fx; b.vy += fy; }
+                const a = nodes[i];
+                const b = nodes[j];
+                const dx = b.x - a.x;
+                const dy = b.y - a.y;
+                const distanceSquared = dx * dx + dy * dy || 1;
+                const distance = Math.sqrt(distanceSquared);
+                const force = REPULSION / distanceSquared;
+                const forceX = dx / distance * force;
+                const forceY = dy / distance * force;
+                if (!a.isHeld) { a.velocityX -= forceX; a.velocityY -= forceY; }
+                if (!b.isHeld) { b.velocityX += forceX; b.velocityY += forceY; }
             }
         }
-        for (const [aId, bId] of EDGES) {
-            const a = byId[aId], b = byId[bId];
-            const dx = b.x - a.x, dy = b.y - a.y, d = Math.max(Math.hypot(dx, dy), 0.01);
-            const f = SPRING * (d - SPRING_LEN), fx = dx / d * f, fy = dy / d * f;
-            if (!a.fixed) { a.vx += fx; a.vy += fy; }
-            if (!b.fixed) { b.vx -= fx; b.vy -= fy; }
+
+        // Edge springs: connected nodes pull toward EDGE_LENGTH apart.
+        for (const [fromId, toId] of EDGE_DATA) {
+            const a = nodesById[fromId];
+            const b = nodesById[toId];
+            const dx = b.x - a.x;
+            const dy = b.y - a.y;
+            const distance = Math.max(Math.hypot(dx, dy), 0.01);
+            const force = EDGE_SPRING * (distance - EDGE_LENGTH);
+            const forceX = dx / distance * force;
+            const forceY = dy / distance * force;
+            if (!a.isHeld) { a.velocityX += forceX; a.velocityY += forceY; }
+            if (!b.isHeld) { b.velocityX -= forceX; b.velocityY -= forceY; }
         }
-        for (const n of nodes) {
-            n.vx += (W / 2 - n.x) * CENTER_PULL;
-            n.vy += (H / 2 - n.y) * CENTER_PULL;
-            if (!n.fixed && !REDUCED) {
-                n.vx += Math.sin(frame * n.phaseSpd + n.phase) * 0.025;
-                n.vy += Math.cos(frame * n.phaseSpd * 0.83 + n.phase * 1.3) * 0.025;
+
+        // Centre pull + idle wobble + friction + move + keep inside the canvas.
+        for (const node of nodes) {
+            node.velocityX += (width / 2 - node.x) * CENTER_PULL;
+            node.velocityY += (height / 2 - node.y) * CENTER_PULL;
+
+            if (!node.isHeld && !prefersReducedMotion) {
+                node.velocityX += Math.sin(frameCount * node.wobbleSpeed + node.wobblePhase) * 0.025;
+                node.velocityY += Math.cos(frameCount * node.wobbleSpeed * 0.83 + node.wobblePhase * 1.3) * 0.025;
             }
-            n.vx *= DAMPING; n.vy *= DAMPING;
-            n.x += n.vx; n.y += n.vy;
-            const pad = n.size + 6;
-            if (n.x < pad) { n.x = pad; n.vx *= -0.4; }
-            if (n.x > W - pad) { n.x = W - pad; n.vx *= -0.4; }
-            if (n.y < pad) { n.y = pad; n.vy *= -0.4; }
-            if (n.y > H - pad) { n.y = H - pad; n.vy *= -0.4; }
+
+            node.velocityX *= FRICTION;
+            node.velocityY *= FRICTION;
+            node.x += node.velocityX;
+            node.y += node.velocityY;
+
+            // Bounce softly off the edges.
+            const edge = node.size + 6;
+            if (node.x < edge) { node.x = edge; node.velocityX *= -0.4; }
+            if (node.x > width - edge) { node.x = width - edge; node.velocityX *= -0.4; }
+            if (node.y < edge) { node.y = edge; node.velocityY *= -0.4; }
+            if (node.y > height - edge) { node.y = height - edge; node.velocityY *= -0.4; }
         }
     }
-    function draw() {
-        ctx.clearRect(0, 0, W, H);
-        for (const [aId, bId] of EDGES) {
-            const a = byId[aId], b = byId[bId];
-            const hot = hovered && (hovered.id === aId || hovered.id === bId);
-            ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y);
-            ctx.strokeStyle = hot ? LIME : `rgba(${GREY}, 0.22)`;
-            ctx.lineWidth = hot ? 1.4 : 1;
+
+    // ---- Draw ----
+    function drawGraph() {
+        ctx.clearRect(0, 0, width, height);
+
+        // Edges. An edge lights up lime if either end is hovered.
+        for (const [fromId, toId] of EDGE_DATA) {
+            const a = nodesById[fromId];
+            const b = nodesById[toId];
+            const isLit = hoveredNode && (hoveredNode.id === fromId || hoveredNode.id === toId);
+            ctx.beginPath();
+            ctx.moveTo(a.x, a.y);
+            ctx.lineTo(b.x, b.y);
+            ctx.strokeStyle = isLit ? LIME : `rgba(${GRAPH_GREY}, 0.22)`;
+            ctx.lineWidth = isLit ? 1.4 : 1;
             ctx.stroke();
         }
-        for (const n of nodes) {
-            const hot = hovered === n || dragging === n;
-            const lit = n.root || hot;
-            const r = n.size;
-            if (hot) {
-                const g = ctx.createRadialGradient(n.x, n.y, r, n.x, n.y, r * 3.2);
-                g.addColorStop(0, 'rgba(198, 241, 53, 0.26)');
-                g.addColorStop(1, 'rgba(198, 241, 53, 0)');
-                ctx.fillStyle = g;
-                ctx.beginPath(); ctx.arc(n.x, n.y, r * 3.2, 0, 6.2832); ctx.fill();
+
+        // Nodes.
+        for (const node of nodes) {
+            const isActive = hoveredNode === node || draggedNode === node;
+            const isLit = node.root || isActive;
+            const radius = node.size;
+
+            // Soft lime glow behind active nodes.
+            if (isActive) {
+                const glow = ctx.createRadialGradient(node.x, node.y, radius, node.x, node.y, radius * 3.2);
+                glow.addColorStop(0, 'rgba(198, 241, 53, 0.26)');
+                glow.addColorStop(1, 'rgba(198, 241, 53, 0)');
+                ctx.fillStyle = glow;
+                ctx.beginPath();
+                ctx.arc(node.x, node.y, radius * 3.2, 0, 6.2832);
+                ctx.fill();
             }
-            if (n.root) {
-                // the lit origin: filled lime
+
+            if (node.root) {
+                // Root: filled lime disc with a dark hole in the middle.
                 ctx.fillStyle = LIME;
-                ctx.beginPath(); ctx.arc(n.x, n.y, r, 0, 6.2832); ctx.fill();
+                ctx.beginPath();
+                ctx.arc(node.x, node.y, radius, 0, 6.2832);
+                ctx.fill();
                 ctx.fillStyle = BG;
-                ctx.beginPath(); ctx.arc(n.x, n.y, r * 0.34, 0, 6.2832); ctx.fill();
+                ctx.beginPath();
+                ctx.arc(node.x, node.y, radius * 0.34, 0, 6.2832);
+                ctx.fill();
             } else {
-                // a branch: outlined circle, lights up on hover
+                // Branch: hollow circle that turns lime when active.
                 ctx.fillStyle = BG;
-                ctx.beginPath(); ctx.arc(n.x, n.y, r, 0, 6.2832); ctx.fill();
-                ctx.strokeStyle = hot ? LIME : `rgba(${GREY}, 0.8)`;
+                ctx.beginPath();
+                ctx.arc(node.x, node.y, radius, 0, 6.2832);
+                ctx.fill();
+                ctx.strokeStyle = isActive ? LIME : `rgba(${GRAPH_GREY}, 0.8)`;
                 ctx.lineWidth = 1.4;
-                ctx.beginPath(); ctx.arc(n.x, n.y, r, 0, 6.2832); ctx.stroke();
+                ctx.beginPath();
+                ctx.arc(node.x, node.y, radius, 0, 6.2832);
+                ctx.stroke();
             }
+
+            // Label under the node.
             ctx.font = '700 10px "Space Mono", monospace';
             ctx.textAlign = 'center';
-            ctx.fillStyle = lit ? LIME : `rgba(${GREY}, 0.9)`;
-            ctx.fillText(n.title, n.x, n.y + r + 15);
+            ctx.fillStyle = isLit ? LIME : `rgba(${GRAPH_GREY}, 0.9)`;
+            ctx.fillText(node.title, node.x, node.y + radius + 15);
         }
     }
-    function loop() { if (running) { step(); draw(); } requestAnimationFrame(loop); }
-    loop();
-    document.addEventListener('visibilitychange', () => { running = !document.hidden; });
+
+    function animationLoop() {
+        if (isRunning) {
+            stepPhysics();
+            drawGraph();
+        }
+        requestAnimationFrame(animationLoop);
+    }
+    animationLoop();
+
+    document.addEventListener('visibilitychange', () => {
+        isRunning = !document.hidden;
+    });
 })();
 
-/* ───────────────────────────────────────────────
-   4 · SCENES — every visual states its technology.
-   Shared by the Selected Work exhibition (index) and
-   the engineering archive (projects page).
-   ─────────────────────────────────────────────── */
-function pipeline(g, stages, y) {
-    y = y || 290;
-    const M = 42, GAP = 26;
-    const w = (800 - M * 2 - GAP * (stages.length - 1)) / stages.length;
-    let d = 0.15;
-    stages.forEach((st, i) => {
-        const x = M + i * (w + GAP);
-        const box = el('g', { class: 'eng-box pop', style: `--d:${d}s` }, g);
-        el('rect', { x, y: y - 30, width: w, height: 60, rx: 1 }, box);
-        const t = el('text', { x: x + w / 2, y: y - 4, 'text-anchor': 'middle', class: 'ex-label' }, box);
-        t.textContent = st.l;
-        if (st.s) {
-            const s = el('text', { x: x + w / 2, y: y + 15, 'text-anchor': 'middle', class: 'ex-sublabel' }, box);
-            s.textContent = st.s;
+
+/* ============================================================
+   7. PROJECT SCENE DRAWINGS
+   Each project has a small technical drawing with two layers:
+     - "show":  the calm showcase view
+     - "eng":   the engineering / blueprint view (drawn on hover/toggle)
+   These are used by both the home page preview (section 8) and the
+   projects archive page (section 9).
+   ============================================================ */
+
+// Draw a left-to-right pipeline of labelled boxes joined by arrows.
+// `stages` is a list of { l: label, s: sub-label, hot: highlight? }.
+function drawPipeline(group, stages, centerY) {
+    centerY = centerY || 290;
+    const margin = 42;
+    const gap = 26;
+    const boxWidth = (800 - margin * 2 - gap * (stages.length - 1)) / stages.length;
+    let delay = 0.15;  // staggered animation delay, grows per stage
+
+    stages.forEach((stage, index) => {
+        const x = margin + index * (boxWidth + gap);
+
+        const box = createSvgElement('g', { class: 'eng-box pop', style: `--d:${delay}s` }, group);
+        createSvgElement('rect', { x, y: centerY - 30, width: boxWidth, height: 60, rx: 1 }, box);
+
+        const label = createSvgElement('text', { x: x + boxWidth / 2, y: centerY - 4, 'text-anchor': 'middle', class: 'ex-label' }, box);
+        label.textContent = stage.l;
+
+        if (stage.s) {
+            const subLabel = createSvgElement('text', { x: x + boxWidth / 2, y: centerY + 15, 'text-anchor': 'middle', class: 'ex-sublabel' }, box);
+            subLabel.textContent = stage.s;
         }
-        if (i < stages.length - 1) {
-            el('path', { d: `M${x + w} ${y} H${x + w + GAP}`, class: 'eng-line draw', pathLength: 1, style: `--d:${d + 0.1}s` }, g);
-            el('path', { d: `M${x + w + GAP - 7} ${y - 4} L${x + w + GAP} ${y} L${x + w + GAP - 7} ${y + 4}`, class: 'eng-line pop', pathLength: 1, style: `--d:${d + 0.25}s` }, g);
+
+        // Arrow to the next box (line + arrowhead), except after the last box.
+        if (index < stages.length - 1) {
+            const lineStartX = x + boxWidth;
+            const lineEndX = x + boxWidth + gap;
+            createSvgElement('path', { d: `M${lineStartX} ${centerY} H${lineEndX}`, class: 'eng-line draw', pathLength: 1, style: `--d:${delay + 0.1}s` }, group);
+            createSvgElement('path', { d: `M${lineEndX - 7} ${centerY - 4} L${lineEndX} ${centerY} L${lineEndX - 7} ${centerY + 4}`, class: 'eng-line pop', pathLength: 1, style: `--d:${delay + 0.25}s` }, group);
         }
-        d += 0.16;
+
+        delay += 0.16;
     });
 }
 
-function blueprint(g) {
-    let d = '';
-    for (let x = 50; x < 800; x += 50) d += `M${x} 0 V560 `;
-    for (let y = 50; y < 560; y += 50) d += `M0 ${y} H800 `;
-    el('path', { d, class: 'eng-bp' }, g);
+// The faint blueprint grid behind the engineering view.
+function drawBlueprintGrid(group) {
+    let pathData = '';
+    for (let x = 50; x < 800; x += 50) pathData += `M${x} 0 V560 `;
+    for (let y = 50; y < 560; y += 50) pathData += `M0 ${y} H800 `;
+    createSvgElement('path', { d: pathData, class: 'eng-bp' }, group);
 }
 
+// One entry per project theme. `show(group)` draws the showcase art;
+// `eng(group)` draws the blueprint + pipeline for the engineering view.
 const SCENES = {
     auv: {
-        show(g) {
-            [['10m', 140], ['20m', 280], ['30m', 420]].forEach(([t, y]) => {
-                el('path', { d: `M740 ${y} H760`, class: 'es-soft' }, g);
-                const tx = el('text', { x: 735, y: y + 4, 'text-anchor': 'end', class: 'ex-sublabel' }, g);
-                tx.textContent = t;
+        show(group) {
+            // Depth markers down the right edge.
+            [['10m', 140], ['20m', 280], ['30m', 420]].forEach(([label, y]) => {
+                createSvgElement('path', { d: `M740 ${y} H760`, class: 'es-soft' }, group);
+                const text = createSvgElement('text', { x: 735, y: y + 4, 'text-anchor': 'end', class: 'ex-sublabel' }, group);
+                text.textContent = label;
             });
         },
-        eng(g) {
-            blueprint(g);
-            pipeline(g, [
+        eng(group) {
+            drawBlueprintGrid(group);
+            drawPipeline(group, [
                 { l: 'Camera · Sonar', s: 'raw streams' },
                 { l: 'Preprocess', s: 'denoise' },
                 { l: 'YOLO Detect', s: 'gates · buoys', hot: true },
                 { l: 'ROS Graph', s: 'publish' },
                 { l: 'Navigate', s: 'act' }
             ]);
-            const cap = el('text', { x: 42, y: 80, class: 'ex-label pop', style: '--d:.9s' }, g);
-            cap.textContent = 'perception stack — runs on board, real time';
+            const caption = createSvgElement('text', { x: 42, y: 80, class: 'ex-label pop', style: '--d:.9s' }, group);
+            caption.textContent = 'perception stack — runs on board, real time';
         }
     },
+
     kinematics: {
-        show(g) {
-            el('path', { d: 'M150 470 L260 300 L420 350 L530 230', class: 'es-chain' }, g);
-            el('path', { d: 'M120 470 H180', class: 'es-soft' }, g);
-            [[150, 470], [260, 300], [420, 350]].forEach(([x, y]) =>
-                el('circle', { cx: x, cy: y, r: 6, class: 'es-joint' }, g));
-            el('path', { d: 'M285 285 A 38 38 0 0 1 295 320', class: 'es-dash' }, g);
-            el('path', { d: 'M440 330 A 32 32 0 0 1 448 365', class: 'es-dash' }, g);
-            el('path', { d: 'M530 230 C 590 180, 650 170, 700 190', class: 'es-dash' }, g);
-            el('circle', { cx: 700, cy: 190, r: 4, class: 'es-waypoint' }, g);
+        show(group) {
+            // The robot arm: links, joints, a base, and a reach arc.
+            createSvgElement('path', { d: 'M150 470 L260 300 L420 350 L530 230', class: 'es-chain' }, group);
+            createSvgElement('path', { d: 'M120 470 H180', class: 'es-soft' }, group);
+            [[150, 470], [260, 300], [420, 350]].forEach(([x, y]) => {
+                createSvgElement('circle', { cx: x, cy: y, r: 6, class: 'es-joint' }, group);
+            });
+            createSvgElement('path', { d: 'M285 285 A 38 38 0 0 1 295 320', class: 'es-dash' }, group);
+            createSvgElement('path', { d: 'M440 330 A 32 32 0 0 1 448 365', class: 'es-dash' }, group);
+            createSvgElement('path', { d: 'M530 230 C 590 180, 650 170, 700 190', class: 'es-dash' }, group);
+            createSvgElement('circle', { cx: 700, cy: 190, r: 4, class: 'es-waypoint' }, group);
         },
-        eng(g) {
-            blueprint(g);
-            pipeline(g, [
+        eng(group) {
+            drawBlueprintGrid(group);
+            drawPipeline(group, [
                 { l: 'Camera', s: '30 fps' },
                 { l: 'MediaPipe', s: '21 keypoints' },
                 { l: 'Joint Map', s: 'θ1 θ2 θ3', hot: true },
@@ -544,91 +899,112 @@ const SCENES = {
             ], 440);
         }
     },
+
     vision: {
-        show(g) {
-            const pts = [[120, 120], [200, 180], [310, 90], [430, 150], [560, 110], [660, 200],
-                         [150, 320], [260, 380], [390, 300], [520, 360], [640, 320], [220, 470],
-                         [460, 460], [600, 440], [340, 200], [580, 250]];
-            pts.forEach(([x, y]) => {
-                el('path', { d: `M${x - 4} ${y} H${x + 4} M${x} ${y - 4} V${y + 4}`, class: 'es-feature' }, g);
+        show(group) {
+            // Scattered feature points (little plus marks).
+            const featurePoints = [
+                [120, 120], [200, 180], [310, 90], [430, 150], [560, 110], [660, 200],
+                [150, 320], [260, 380], [390, 300], [520, 360], [640, 320], [220, 470],
+                [460, 460], [600, 440], [340, 200], [580, 250]
+            ];
+            featurePoints.forEach(([x, y]) => {
+                createSvgElement('path', { d: `M${x - 4} ${y} H${x + 4} M${x} ${y - 4} V${y + 4}`, class: 'es-feature' }, group);
             });
-            const x = 330, y = 270, w = 150, h = 110, c = 16;
-            el('path', {
-                d: [`M${x} ${y + c} V${y} H${x + c}`, `M${x + w - c} ${y} H${x + w} V${y + c}`,
-                    `M${x + w} ${y + h - c} V${y + h} H${x + w - c}`, `M${x + c} ${y + h} H${x} V${y + h - c}`].join(' '),
+
+            // A detection box with a confidence label.
+            const boxX = 330, boxY = 270, boxW = 150, boxH = 110, corner = 16;
+            createSvgElement('path', {
+                d: [
+                    `M${boxX} ${boxY + corner} V${boxY} H${boxX + corner}`,
+                    `M${boxX + boxW - corner} ${boxY} H${boxX + boxW} V${boxY + corner}`,
+                    `M${boxX + boxW} ${boxY + boxH - corner} V${boxY + boxH} H${boxX + boxW - corner}`,
+                    `M${boxX + corner} ${boxY + boxH} H${boxX} V${boxY + boxH - corner}`
+                ].join(' '),
                 class: 'es-soft', stroke: 'rgba(198,241,53,0.6)'
-            }, g);
-            const t = el('text', { x, y: y - 9, class: 'ex-sublabel', fill: 'rgba(198,241,53,0.55)' }, g);
-            t.textContent = 'target 0.97';
+            }, group);
+            const text = createSvgElement('text', { x: boxX, y: boxY - 9, class: 'ex-sublabel', fill: 'rgba(198,241,53,0.55)' }, group);
+            text.textContent = 'target 0.97';
         },
-        eng(g) {
-            blueprint(g);
-            pipeline(g, [
+        eng(group) {
+            drawBlueprintGrid(group);
+            drawPipeline(group, [
                 { l: 'Roboflow', s: 'annotate' },
                 { l: 'YOLO Train', s: 'custom set', hot: true },
                 { l: 'Optimize', s: 'edge real-time' },
                 { l: 'Deploy', s: '→ MIRA' }
             ], 470);
-            [[120, 120, 26, 8], [430, 150, 22, 10], [640, 320, -24, -6], [260, 380, 20, -8]].forEach(([x, y, vx, vy], i) => {
-                el('path', { d: `M${x} ${y} l${vx} ${vy}`, class: 'eng-line draw', pathLength: 1, style: `--d:${0.7 + i * 0.12}s` }, g);
+            // Short motion vectors on a few feature points (optical flow).
+            [[120, 120, 26, 8], [430, 150, 22, 10], [640, 320, -24, -6], [260, 380, 20, -8]].forEach(([x, y, dx, dy], index) => {
+                createSvgElement('path', { d: `M${x} ${y} l${dx} ${dy}`, class: 'eng-line draw', pathLength: 1, style: `--d:${0.7 + index * 0.12}s` }, group);
             });
         }
     },
+
     forecast: {
-        show(g) {
-            el('path', { d: 'M90 470 V90 M90 470 H720', class: 'es-soft' }, g);
-            el('path', { d: 'M90 430 C 200 420, 280 380, 400 330', class: 'es-chain' }, g);
-            el('path', { d: 'M400 330 C 500 290, 600 220, 700 160', class: 'es-dash' }, g);
-            el('circle', { cx: 700, cy: 160, r: 4.5, fill: 'rgba(198,241,53,0.65)' }, g);
-            const t = el('text', { x: 400, y: 500, class: 'ex-sublabel' }, g);
-            t.textContent = 'observed · · · forecast';
+        show(group) {
+            // Axes, an "observed" solid line, then a dashed "forecast" line.
+            createSvgElement('path', { d: 'M90 470 V90 M90 470 H720', class: 'es-soft' }, group);
+            createSvgElement('path', { d: 'M90 430 C 200 420, 280 380, 400 330', class: 'es-chain' }, group);
+            createSvgElement('path', { d: 'M400 330 C 500 290, 600 220, 700 160', class: 'es-dash' }, group);
+            createSvgElement('circle', { cx: 700, cy: 160, r: 4.5, fill: 'rgba(198,241,53,0.65)' }, group);
+            const text = createSvgElement('text', { x: 400, y: 500, class: 'ex-sublabel' }, group);
+            text.textContent = 'observed · · · forecast';
         },
-        eng(g) {
-            blueprint(g);
-            pipeline(g, [
+        eng(group) {
+            drawBlueprintGrid(group);
+            drawPipeline(group, [
                 { l: 'Playwright', s: 'RBI DBIE' },
                 { l: 'Parse', s: 'xlsx → parquet' },
                 { l: 'Prophet', s: 'time-series', hot: true },
                 { l: 'Forecast', s: '2.1% MAPE' }
             ], 250);
-            el('path', { d: 'M400 310 C 500 270, 600 200, 700 135', class: 'eng-line draw', pathLength: 1, style: '--d:.8s' }, g);
-            el('path', { d: 'M400 350 C 500 310, 600 240, 700 185', class: 'eng-line draw', pathLength: 1, style: '--d:.9s' }, g);
-            const t = el('text', { x: 590, y: 120, class: 'ex-label pop', style: '--d:1.1s' }, g);
-            t.textContent = 'confidence interval';
+            // The two edges of the confidence band.
+            createSvgElement('path', { d: 'M400 310 C 500 270, 600 200, 700 135', class: 'eng-line draw', pathLength: 1, style: '--d:.8s' }, group);
+            createSvgElement('path', { d: 'M400 350 C 500 310, 600 240, 700 185', class: 'eng-line draw', pathLength: 1, style: '--d:.9s' }, group);
+            const text = createSvgElement('text', { x: 590, y: 120, class: 'ex-label pop', style: '--d:1.1s' }, group);
+            text.textContent = 'confidence interval';
         }
     },
+
     learning: {
-        show(g) {
-            el('path', { d: 'M120 120 C 220 380, 300 440, 400 450 S 600 430, 700 410', class: 'es-chain' }, g);
-            el('circle', { cx: 430, cy: 451, r: 4.5, fill: 'rgba(198,241,53,0.65)' }, g);
-            const t1 = el('text', { x: 120, y: 95, class: 'ex-sublabel' }, g);
-            t1.textContent = 'loss';
-            const t2 = el('text', { x: 660, y: 500, class: 'ex-sublabel' }, g);
-            t2.textContent = 'epochs';
-            for (let x = 120; x <= 700; x += 58) el('path', { d: `M${x} 478 v6`, class: 'es-soft' }, g);
+        show(group) {
+            // A loss curve dropping and flattening, with axis labels and ticks.
+            createSvgElement('path', { d: 'M120 120 C 220 380, 300 440, 400 450 S 600 430, 700 410', class: 'es-chain' }, group);
+            createSvgElement('circle', { cx: 430, cy: 451, r: 4.5, fill: 'rgba(198,241,53,0.65)' }, group);
+            const lossLabel = createSvgElement('text', { x: 120, y: 95, class: 'ex-sublabel' }, group);
+            lossLabel.textContent = 'loss';
+            const epochsLabel = createSvgElement('text', { x: 660, y: 500, class: 'ex-sublabel' }, group);
+            epochsLabel.textContent = 'epochs';
+            for (let x = 120; x <= 700; x += 58) {
+                createSvgElement('path', { d: `M${x} 478 v6`, class: 'es-soft' }, group);
+            }
         },
-        eng(g) {
-            blueprint(g);
-            pipeline(g, [
+        eng(group) {
+            drawBlueprintGrid(group);
+            drawPipeline(group, [
                 { l: 'NumPy', s: 'nets by hand' },
                 { l: 'Backprop', s: 'from scratch', hot: true },
                 { l: 'PyTorch', s: 'training loops' },
                 { l: 'CNN · Transfer', s: 'applied' }
             ], 230);
-            const t = el('text', { x: 42, y: 80, class: 'ex-label pop', style: '--d:.9s' }, g);
-            t.textContent = '46 notebooks — every concept proven in code';
+            const caption = createSvgElement('text', { x: 42, y: 80, class: 'ex-label pop', style: '--d:.9s' }, group);
+            caption.textContent = '46 notebooks — every concept proven in code';
         }
     },
+
     fieldwork: {
-        show(g) {
-            el('path', { d: 'M60 480 H740', class: 'es-soft' }, g);
-            el('path', { d: 'M400 480 C 395 380, 380 320, 390 240 M392 350 C 350 320, 330 300, 322 260 M394 300 C 440 270, 455 250, 462 215', class: 'es-dash' }, g);
-            [[390, 240], [322, 260], [462, 215]].forEach(([x, y]) =>
-                el('circle', { cx: x, cy: y, r: 4, class: 'es-waypoint' }, g));
+        show(group) {
+            // A ground line with little plants growing out of it.
+            createSvgElement('path', { d: 'M60 480 H740', class: 'es-soft' }, group);
+            createSvgElement('path', { d: 'M400 480 C 395 380, 380 320, 390 240 M392 350 C 350 320, 330 300, 322 260 M394 300 C 440 270, 455 250, 462 215', class: 'es-dash' }, group);
+            [[390, 240], [322, 260], [462, 215]].forEach(([x, y]) => {
+                createSvgElement('circle', { cx: x, cy: y, r: 4, class: 'es-waypoint' }, group);
+            });
         },
-        eng(g) {
-            blueprint(g);
-            pipeline(g, [
+        eng(group) {
+            drawBlueprintGrid(group);
+            drawPipeline(group, [
                 { l: 'Field Data', s: 'crops · prices' },
                 { l: 'CV Guidance', s: 'disease', hot: true },
                 { l: 'Recommend', s: 'engine' },
@@ -638,195 +1014,282 @@ const SCENES = {
     }
 };
 
-/* ───────────────────────────────────────────────
-   5 · SELECTED WORK — the exhibition (index page)
-   A vertical list on the left; a large living preview
-   on the right that changes as you move through it.
-   ─────────────────────────────────────────────── */
-const FEATURED = [
-    { num: '01', name: 'MIRA 2.0', sub: 'Autonomous Underwater Vehicle', theme: 'auv', photo: true,
-      idx: 'PRJ 01 — underwater autonomy',
-      challenge: 'real-time underwater perception — light distortion, turbidity, and a live competition latency budget, all on the vehicle’s own hardware.',
-      href: 'projects.html#mira' },
-    { num: '02', name: 'Dexterous Robotic Arm', sub: 'Human–Robot Interaction', theme: 'kinematics',
-      video: 'image/robarm.mp4',
-      idx: 'PRJ 02 — human–machine interface',
-      challenge: 'turning noisy hand landmarks into smooth, stable physical motion on a real 3-DOF manipulator.',
-      href: 'projects.html#arm' },
-    { num: '03', name: 'Object Detection Pipeline', sub: 'Computer Vision', theme: 'vision',
-      idx: 'PRJ 03 — custom vision pipeline',
-      challenge: 'surviving underwater domain shift while staying real-time on a constrained edge device.',
-      href: 'projects.html#detect' },
-    { num: '04', name: 'MPi Market Intelligence', sub: 'Forecasting & Data Engineering', theme: 'forecast',
-      idx: 'PRJ 04 — time-series intelligence',
-      challenge: 'forecasting reliably from a brittle government portal that publishes irregular Excel files.',
-      href: 'projects.html#mpi' }
+
+/* ============================================================
+   8. HOME PAGE — "SELECTED WORK" PREVIEW SWITCHER
+   A list of featured projects on the left; choosing one (hover,
+   click, or keyboard focus) updates the big preview on the right.
+   ============================================================ */
+
+const FEATURED_PROJECTS = [
+    {
+        num: '01', name: 'MIRA 2.0', sub: 'Autonomous Underwater Vehicle',
+        theme: 'auv', photo: true,
+        idx: 'PRJ 01 — underwater autonomy',
+        challenge: 'real-time underwater perception — light distortion, turbidity, and a live competition latency budget, all on the vehicle’s own hardware.',
+        href: 'projects.html#mira'
+    },
+    {
+        num: '02', name: 'Dexterous Robotic Arm', sub: 'Human–Robot Interaction',
+        theme: 'kinematics', video: 'image/robarm.mp4',
+        idx: 'PRJ 02 — human–machine interface',
+        challenge: 'turning noisy hand landmarks into smooth, stable physical motion on a real 3-DOF manipulator.',
+        href: 'projects.html#arm'
+    },
+    {
+        num: '03', name: 'Object Detection Pipeline', sub: 'Computer Vision',
+        theme: 'vision',
+        idx: 'PRJ 03 — custom vision pipeline',
+        challenge: 'surviving underwater domain shift while staying real-time on a constrained edge device.',
+        href: 'projects.html#detect'
+    },
+    {
+        num: '04', name: 'MPi Market Intelligence', sub: 'Forecasting & Data Engineering',
+        theme: 'forecast',
+        idx: 'PRJ 04 — time-series intelligence',
+        challenge: 'forecasting reliably from a brittle government portal that publishes irregular Excel files.',
+        href: 'projects.html#mpi'
+    }
 ];
 
-const swList = document.getElementById('sw-list');
-const swStage = document.getElementById('sw-stage');
-if (swList && swStage) {
-    const wrap = document.getElementById('sw-stage-wrap');
-    const photo = document.getElementById('sw-photo');
-    const video = document.getElementById('sw-video');
-    const idxEl = document.getElementById('sw-index');
-    const chEl = document.getElementById('sw-challenge');
-    const caseEl = document.getElementById('sw-case');
+const selectedWorkList = document.getElementById('sw-list');
+const selectedWorkStage = document.getElementById('sw-stage');
 
-    FEATURED.forEach((p, i) => {
-        const b = document.createElement('button');
-        b.className = 'sw-item';
-        b.setAttribute('role', 'tab');
-        b.innerHTML = `<span class="sw-num mono">${p.num}</span><span class="sw-text"><span class="sw-name">${p.name}</span><span class="sw-sub">${p.sub}</span></span>`;
-        b.addEventListener('click', () => select(i));
-        if (CAN_HOVER) b.addEventListener('mouseenter', () => select(i));
-        b.addEventListener('focus', () => select(i));
-        swList.appendChild(b);
+if (selectedWorkList && selectedWorkStage) {
+    const stageWrap = document.getElementById('sw-stage-wrap');
+    const previewPhoto = document.getElementById('sw-photo');
+    const previewVideo = document.getElementById('sw-video');
+    const indexLabel = document.getElementById('sw-index');
+    const challengeText = document.getElementById('sw-challenge');
+    const caseStudyLink = document.getElementById('sw-case');
+
+    // Build the clickable list of projects.
+    FEATURED_PROJECTS.forEach((project, index) => {
+        const button = document.createElement('button');
+        button.className = 'sw-item';
+        button.setAttribute('role', 'tab');
+        button.innerHTML =
+            `<span class="sw-num mono">${project.num}</span>` +
+            `<span class="sw-text">` +
+                `<span class="sw-name">${project.name}</span>` +
+                `<span class="sw-sub">${project.sub}</span>` +
+            `</span>`;
+        button.addEventListener('click', () => selectProject(index));
+        if (hasMouse) button.addEventListener('mouseenter', () => selectProject(index));
+        button.addEventListener('focus', () => selectProject(index));
+        selectedWorkList.appendChild(button);
     });
 
-    let current = -1;
-    function select(i) {
-        if (i === current) return;
-        current = i;
-        const p = FEATURED[i];
-        swList.querySelectorAll('.sw-item').forEach((b, k) => {
-            b.classList.toggle('on', k === i);
-            b.setAttribute('aria-selected', String(k === i));
+    let currentProjectIndex = -1;
+
+    function selectProject(index) {
+        if (index === currentProjectIndex) return;
+        currentProjectIndex = index;
+        const project = FEATURED_PROJECTS[index];
+
+        // Highlight the chosen list item.
+        selectedWorkList.querySelectorAll('.sw-item').forEach((button, i) => {
+            const isChosen = i === index;
+            button.classList.toggle('on', isChosen);
+            button.setAttribute('aria-selected', String(isChosen));
         });
-        photo.hidden = !p.photo;
-        idxEl.textContent = p.idx;
-        chEl.textContent = p.challenge;
-        caseEl.href = p.href;
 
-        // a project can present a live video as its showcase; the blueprint
-        // overlay still draws in over it for the engineering view.
-        if (video) {
-            video.hidden = !p.video;
-            if (p.video) { video.currentTime = 0; video.play().catch(() => {}); }
-            else video.pause();
+        // Update the text bits.
+        previewPhoto.hidden = !project.photo;
+        indexLabel.textContent = project.idx;
+        challengeText.textContent = project.challenge;
+        caseStudyLink.href = project.href;
+
+        // A project can show a looping video as its showcase. The engineering
+        // blueprint still draws in over it.
+        if (previewVideo) {
+            previewVideo.hidden = !project.video;
+            if (project.video) {
+                previewVideo.currentTime = 0;
+                previewVideo.play().catch(() => {});  // ignore autoplay rejections
+            } else {
+                previewVideo.pause();
+            }
         }
 
-        swStage.innerHTML = '';
-        if (!p.video) {
-            const show = el('g', { class: 'show' }, swStage);
-            SCENES[p.theme].show(show);
+        // Redraw the SVG scene. Skip the "show" layer when a video is playing.
+        selectedWorkStage.innerHTML = '';
+        if (!project.video) {
+            const showLayer = createSvgElement('g', { class: 'show' }, selectedWorkStage);
+            SCENES[project.theme].show(showLayer);
         }
-        const eng = el('g', { class: 'eng' }, swStage);
-        SCENES[p.theme].eng(eng);
+        const engLayer = createSvgElement('g', { class: 'eng' }, selectedWorkStage);
+        SCENES[project.theme].eng(engLayer);
 
-        // restart the entry + draw animations
-        wrap.classList.remove('eng-on', 'swap');
-        void wrap.offsetWidth;
-        wrap.classList.add('swap');
-        requestAnimationFrame(() => requestAnimationFrame(() => wrap.classList.add('eng-on')));
+        // Restart the entry + line-draw animations.
+        stageWrap.classList.remove('eng-on', 'swap');
+        void stageWrap.offsetWidth;            // force a reflow so the animation replays
+        stageWrap.classList.add('swap');
+        requestAnimationFrame(() => requestAnimationFrame(() => stageWrap.classList.add('eng-on')));
     }
-    select(0);
+
+    selectProject(0);  // start on the first project
 }
 
-/* ───────────────────────────────────────────────
-   6 · ENGINEERING ARCHIVE — case study visuals
-   (projects page) with showcase / engineering modes
-   ─────────────────────────────────────────────── */
-document.querySelectorAll('.exhibit').forEach(article => {
-    const theme = article.dataset.theme;
-    const svg = article.querySelector('.ex-stage');
-    const toggle = article.querySelector('.ex-toggle');
-    const visual = article.querySelector('.ex-visual');
-    if (!theme || !svg || !SCENES[theme]) return;
 
-    // when a live video is the showcase, skip the abstract scene and keep
-    // only the engineering blueprint — it draws in over the darkened video.
+/* ============================================================
+   9. PROJECTS PAGE — ENGINEERING ARCHIVE TOGGLES
+   Each project on the archive page can flip between its showcase
+   and engineering view, by hovering the visual or clicking the
+   toggle button.
+   ============================================================ */
+
+document.querySelectorAll('.exhibit').forEach((article) => {
+    const theme = article.dataset.theme;
+    const stage = article.querySelector('.ex-stage');
+    const toggleButton = article.querySelector('.ex-toggle');
+    const visual = article.querySelector('.ex-visual');
+    if (!theme || !stage || !SCENES[theme]) return;
+
+    // If a live video is the showcase, skip the abstract "show" art and keep
+    // only the engineering blueprint (it draws over the darkened video).
     const hasVideo = !!article.querySelector('.ex-video');
     if (!hasVideo) {
-        const show = el('g', { class: 'show' }, svg);
-        SCENES[theme].show(show);
+        const showLayer = createSvgElement('g', { class: 'show' }, stage);
+        SCENES[theme].show(showLayer);
     }
-    const eng = el('g', { class: 'eng' }, svg);
-    SCENES[theme].eng(eng);
+    const engLayer = createSvgElement('g', { class: 'eng' }, stage);
+    SCENES[theme].eng(engLayer);
 
-    let pinned = false, hovered = false;
-    function update() {
-        const on = pinned || hovered;
-        article.classList.toggle('eng-on', on);
-        if (toggle) {
-            toggle.setAttribute('aria-pressed', String(on));
-            toggle.textContent = on ? 'showcase view' : 'engineering view';
+    // The view is "on" (engineering) if it's pinned by a click OR hovered.
+    let isPinned = false;
+    let isHovered = false;
+
+    function updateView() {
+        const showEngineering = isPinned || isHovered;
+        article.classList.toggle('eng-on', showEngineering);
+        if (toggleButton) {
+            toggleButton.setAttribute('aria-pressed', String(showEngineering));
+            toggleButton.textContent = showEngineering ? 'showcase view' : 'engineering view';
         }
     }
-    if (toggle) toggle.addEventListener('click', () => { pinned = !pinned; update(); });
-    if (CAN_HOVER && visual) {
-        visual.addEventListener('mouseenter', () => { hovered = true; update(); });
-        visual.addEventListener('mouseleave', () => { hovered = false; update(); });
+
+    if (toggleButton) {
+        toggleButton.addEventListener('click', () => {
+            isPinned = !isPinned;
+            updateView();
+        });
+    }
+    if (hasMouse && visual) {
+        visual.addEventListener('mouseenter', () => { isHovered = true; updateView(); });
+        visual.addEventListener('mouseleave', () => { isHovered = false; updateView(); });
     }
 });
 
-/* ───────────────────────────────────────────────
-   7 · EXPERIENCE TABS — internships ↔ leadership
-   ─────────────────────────────────────────────── */
-const tabBtns = document.querySelectorAll('.tab-btn');
-tabBtns.forEach(btn => btn.addEventListener('click', () => {
-    tabBtns.forEach(b => {
-        const on = b === btn;
-        b.classList.toggle('active', on);
-        b.setAttribute('aria-selected', String(on));
-    });
-    document.querySelectorAll('.tab-panel').forEach(p =>
-        p.classList.toggle('active', p.id === 'tab-' + btn.dataset.tab));
-    updateRails();
-}));
 
-/* ───────────────────────────────────────────────
-   8 · SKILLS — wires from the core to clusters
-   ─────────────────────────────────────────────── */
-const capMap = document.getElementById('cap-map');
-const capWires = document.getElementById('cap-wires');
-const capCore = document.getElementById('cap-core');
-if (capMap && capWires && capCore) {
-    function drawWires() {
-        capWires.innerHTML = '';
-        const mapRect = capMap.getBoundingClientRect();
-        const coreRect = capCore.getBoundingClientRect();
-        const x0 = coreRect.left - mapRect.left + coreRect.width / 2;
-        const y0 = coreRect.top - mapRect.top + coreRect.height;
-        capMap.querySelectorAll('[data-cluster]').forEach(cl => {
-            const r = cl.getBoundingClientRect();
-            const x1 = r.left - mapRect.left + r.width / 2;
-            const y1 = r.top - mapRect.top;
-            const path = document.createElementNS(SVGNS, 'path');
-            path.setAttribute('d', `M${x0} ${y0} C${x0} ${y0 + 50}, ${x1} ${y1 - 50}, ${x1} ${y1}`);
-            path.setAttribute('class', 'cap-wire');
-            capWires.appendChild(path);
+/* ============================================================
+   10. EXPERIENCE TABS (Internships / Leadership)
+   Clicking a tab button shows its matching panel.
+   ============================================================ */
+
+const tabButtons = document.querySelectorAll('.tab-btn');
+tabButtons.forEach((clickedButton) => {
+    clickedButton.addEventListener('click', () => {
+        // Mark the clicked button active, the others inactive.
+        tabButtons.forEach((button) => {
+            const isActive = button === clickedButton;
+            button.classList.toggle('active', isActive);
+            button.setAttribute('aria-selected', String(isActive));
         });
-        capMap.classList.add('wired');
+
+        // Show the matching panel (id "tab-<name>"), hide the rest.
+        const targetPanelId = 'tab-' + clickedButton.dataset.tab;
+        document.querySelectorAll('.tab-panel').forEach((panel) => {
+            panel.classList.toggle('active', panel.id === targetPanelId);
+        });
+
+        // The newly shown panel needs its progress rail recalculated.
+        updateExperienceRails();
+    });
+});
+
+
+/* ============================================================
+   11. SKILLS — CURVED WIRES FROM THE CORE TO EACH CLUSTER
+   Draws an SVG curve from the centre "core" chip up to each
+   skill cluster. Recomputed on resize because positions change.
+   ============================================================ */
+
+const skillsMap = document.getElementById('cap-map');
+const skillsWires = document.getElementById('cap-wires');
+const skillsCore = document.getElementById('cap-core');
+
+if (skillsMap && skillsWires && skillsCore) {
+    function drawSkillWires() {
+        skillsWires.innerHTML = '';
+
+        const mapBounds = skillsMap.getBoundingClientRect();
+        const coreBounds = skillsCore.getBoundingClientRect();
+        // Start point: bottom-centre of the core chip, relative to the map.
+        const startX = coreBounds.left - mapBounds.left + coreBounds.width / 2;
+        const startY = coreBounds.top - mapBounds.top + coreBounds.height;
+
+        skillsMap.querySelectorAll('[data-cluster]').forEach((cluster) => {
+            const clusterBounds = cluster.getBoundingClientRect();
+            // End point: top-centre of the cluster, relative to the map.
+            const endX = clusterBounds.left - mapBounds.left + clusterBounds.width / 2;
+            const endY = clusterBounds.top - mapBounds.top;
+
+            const wire = document.createElementNS(SVG_NAMESPACE, 'path');
+            wire.setAttribute('d', `M${startX} ${startY} C${startX} ${startY + 50}, ${endX} ${endY - 50}, ${endX} ${endY}`);
+            wire.setAttribute('class', 'cap-wire');
+            skillsWires.appendChild(wire);
+        });
+
+        skillsMap.classList.add('wired');
     }
-    const wireObs = new IntersectionObserver(es => {
-        if (es.some(e => e.isIntersecting)) { drawWires(); wireObs.disconnect(); }
+
+    // Draw the wires the first time the skills section scrolls into view.
+    const skillsObserver = new IntersectionObserver((entries) => {
+        if (entries.some((entry) => entry.isIntersecting)) {
+            drawSkillWires();
+            skillsObserver.disconnect();
+        }
     }, { threshold: 0.1 });
-    wireObs.observe(capMap);
-    let rT;
+    skillsObserver.observe(skillsMap);
+
+    // Redraw (debounced) on resize, but only after they've been drawn once.
+    let wiresResizeTimer;
     window.addEventListener('resize', () => {
-        clearTimeout(rT);
-        rT = setTimeout(() => { if (capMap.classList.contains('wired')) drawWires(); }, 180);
+        clearTimeout(wiresResizeTimer);
+        wiresResizeTimer = setTimeout(() => {
+            if (skillsMap.classList.contains('wired')) drawSkillWires();
+        }, 180);
     });
 }
 
-/* ───────────────────────────────────────────────
-   9 · EXPERIENCE — each visible rail fills on scroll
-   ─────────────────────────────────────────────── */
-const rails = [...document.querySelectorAll('.growth')];
-function updateRails() {
-    if (REDUCED) return;
-    rails.forEach(track => {
+
+/* ============================================================
+   12. EXPERIENCE — PROGRESS RAIL THAT FILLS ON SCROLL
+   Each timeline ("growth") has a vertical rail that fills up as
+   you scroll past it. Hidden tab panels are skipped.
+   ============================================================ */
+
+const experienceTracks = [...document.querySelectorAll('.growth')];
+
+function updateExperienceRails() {
+    if (prefersReducedMotion) return;
+
+    experienceTracks.forEach((track) => {
         const fill = track.querySelector('.growth-rail-fill');
-        if (!fill || track.offsetParent === null) return;   // skip hidden tab panels
-        const r = track.getBoundingClientRect();
-        const progress = Math.min(1, Math.max(0, (window.innerHeight * 0.75 - r.top) / r.height));
+        if (!fill || track.offsetParent === null) return;  // skip hidden panels
+
+        const bounds = track.getBoundingClientRect();
+        // 0 when the track top is at 75% down the screen, 1 once fully passed.
+        const rawProgress = (window.innerHeight * 0.75 - bounds.top) / bounds.height;
+        const progress = Math.min(1, Math.max(0, rawProgress));
         fill.style.transform = `scaleY(${progress})`;
     });
 }
-if (rails.length && !REDUCED) {
-    window.addEventListener('scroll', updateRails, { passive: true });
-    updateRails();
+
+if (experienceTracks.length && !prefersReducedMotion) {
+    window.addEventListener('scroll', updateExperienceRails, { passive: true });
+    updateExperienceRails();
 }
 
 })();

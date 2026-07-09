@@ -1,7 +1,36 @@
 /* ═══════════════════════════════════════════════════════════
    EA — perception · intelligence · motion
    Design system: deep black space, lime as life force.
+
+   CONTENTS
+     1.  Design tokens (:root) + base reset
+     2.  Background field
+     3.  Custom cursor
+     4.  Navigation
+     5.  Hero (text, portrait, buttons, scroll cue)
+     6.  Section headers (shared)
+     7.  About (evolution graph + intro text + stats)
+     8.  Project visuals (shared by Selected Work + archive)
+     9.  Selected Work (home page exhibition)
+     10. Engineering archive (projects page case studies)
+     11. Resume / dossier page
+     12. Skills (capability map)
+     13. Research
+     14. Experience (tabs + timeline)
+     15. Contact
+     16. Footer
+     17. Reveal-on-scroll system
+     18. Sub-page header (projects + resume)
+     19. Animations (@keyframes)
+     20. Responsive (tablet + mobile)
+     21. Reduced motion
+     22. Print (resume → Save as PDF)
    ═══════════════════════════════════════════════════════════ */
+
+
+/* ============================================================
+   1. DESIGN TOKENS + BASE RESET
+   ============================================================ */
 
 :root {
     --bg: #040405;
@@ -47,6 +76,7 @@ a { color: inherit; }
     border-radius: 2px;
 }
 
+/* Hidden link that appears on Tab, jumping keyboard users to the content. */
 .skip-link {
     position: fixed; top: -100px; left: 1rem; z-index: 200;
     background: var(--lime); color: var(--bg);
@@ -55,7 +85,12 @@ a { color: inherit; }
 }
 .skip-link:focus { top: 1rem; }
 
-/* ─── The field (living background) ─── */
+
+/* ============================================================
+   2. BACKGROUND FIELD
+   The full-screen canvas behind everything (the fabric grid).
+   ============================================================ */
+
 #field {
     position: fixed; inset: 0;
     width: 100vw; height: 100vh;
@@ -63,9 +98,15 @@ a { color: inherit; }
     pointer-events: none;
 }
 
+/* Lift the real content above the background canvas. */
 main, .nav, .footer { position: relative; z-index: 1; }
 
-/* ─── Cursor — a precision instrument ─── */
+
+/* ============================================================
+   3. CUSTOM CURSOR
+   A lime dot + a trailing ring (added by mind.js on mouse devices).
+   ============================================================ */
+
 #cursor-dot, #cursor-ring {
     position: fixed; top: 0; left: 0;
     pointer-events: none;
@@ -87,17 +128,23 @@ main, .nav, .footer { position: relative; z-index: 1; }
     border-radius: 50%;
     transition: transform 0.28s var(--ease), border-color 0.28s, opacity 0.28s;
 }
-#cursor-ring.lock::after {
+#cursor-ring.lock::after {       /* over something clickable */
     transform: scale(1.3);
     border-color: var(--lime);
     opacity: 0.9;
 }
 #cursor-ring.press::after { transform: scale(0.72); border-color: var(--lime); }
+
+/* Hide the real cursor only when our custom one is active. */
 @media (hover: hover) and (pointer: fine) {
     body.has-cursor, body.has-cursor * { cursor: none !important; }
 }
 
-/* ─── Nav ─── */
+
+/* ============================================================
+   4. NAVIGATION
+   ============================================================ */
+
 .nav {
     position: fixed; top: 0; left: 0; right: 0;
     z-index: 100;
@@ -107,7 +154,7 @@ main, .nav, .footer { position: relative; z-index: 1; }
     border-bottom: 1px solid var(--border);
     transition: transform 0.4s var(--ease);
 }
-.nav.hidden { transform: translateY(-100%); }
+.nav.hidden { transform: translateY(-100%); }   /* slides up when scrolling down */
 .nav-inner {
     max-width: var(--max-w);
     margin: 0 auto;
@@ -141,12 +188,11 @@ main, .nav, .footer { position: relative; z-index: 1; }
 }
 .nav-cta:hover { background: var(--lime); color: var(--bg); }
 
-@keyframes pulse {
-    0%, 100% { opacity: 1; box-shadow: 0 0 0 0 var(--lime-glow); }
-    50% { opacity: 0.55; box-shadow: 0 0 0 6px transparent; }
-}
 
-/* ─── Hero — the engineer ─── */
+/* ============================================================
+   5. HERO
+   ============================================================ */
+
 .hero {
     min-height: 100svh;
     max-width: var(--max-w);
@@ -157,7 +203,7 @@ main, .nav, .footer { position: relative; z-index: 1; }
 }
 .hero-grid {
     display: grid;
-    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);   /* text | portrait */
     gap: 4rem;
     align-items: center;
 }
@@ -169,7 +215,7 @@ main, .nav, .footer { position: relative; z-index: 1; }
 .hero-name {
     font-family: var(--font-display);
     font-weight: 800;
-    font-size: clamp(2.3rem, 4.8vw, 4.3rem);
+    font-size: clamp(2.3rem, 4.8vw, 4.3rem);   /* mind.js fine-tunes this to fill the column */
     line-height: 1.06;
 }
 .hn-line { display: block; white-space: nowrap; }
@@ -182,7 +228,7 @@ main, .nav, .footer { position: relative; z-index: 1; }
     text-wrap: balance;
 }
 .vital { color: var(--text); font-weight: 600; transition: color 0.5s, text-shadow 0.5s; }
-.vital.on {
+.vital.on {                       /* lit up one-by-one by mind.js */
     color: var(--lime);
     text-shadow: 0 0 24px var(--lime-glow);
 }
@@ -211,7 +257,7 @@ main, .nav, .footer { position: relative; z-index: 1; }
     animation: pulse 2.2s ease-in-out infinite;
 }
 
-/* the portrait — editorial photograph, machine vision on hover */
+/* The portrait — black & white editorial photo with a film-grain overlay. */
 .hero-right { margin: 0; justify-self: end; width: min(100%, 400px); }
 .portrait {
     position: relative;
@@ -235,6 +281,7 @@ main, .nav, .footer { position: relative; z-index: 1; }
     font-size: 0.62rem; color: var(--text-3); letter-spacing: 0.08em;
 }
 
+/* Buttons (used in the hero and elsewhere). */
 .btn {
     font-family: var(--font-mono); font-size: 0.82rem;
     text-decoration: none;
@@ -248,6 +295,7 @@ main, .nav, .footer { position: relative; z-index: 1; }
 .btn-lime:hover { background: transparent; color: var(--lime); box-shadow: 0 0 32px var(--lime-dim); }
 .btn-ghost:hover { border-color: var(--lime); color: var(--lime); }
 
+/* "scroll" hint at the bottom of the hero, with a sweeping line. */
 .scroll-cue {
     position: absolute; bottom: 2.2rem; left: 1.5rem;
     font-size: 0.68rem; color: var(--text-3);
@@ -265,12 +313,12 @@ main, .nav, .footer { position: relative; z-index: 1; }
     transform: translateX(-100%);
     animation: cue-sweep 2.8s var(--ease) infinite;
 }
-@keyframes cue-sweep {
-    0% { transform: translateX(-100%); }
-    55%, 100% { transform: translateX(105%); }
-}
 
-/* ─── Sections ─── */
+
+/* ============================================================
+   6. SECTION HEADERS (shared by every section)
+   ============================================================ */
+
 .section {
     max-width: var(--max-w);
     margin: 0 auto;
@@ -294,13 +342,19 @@ main, .nav, .footer { position: relative; z-index: 1; }
 }
 .section-sub { font-size: 0.72rem; color: var(--text-3); letter-spacing: 0.06em; margin-left: auto; }
 
-/* ─── Origin ─── */
+
+/* ============================================================
+   7. ABOUT (evolution graph + intro text + stats)
+   ============================================================ */
+
 .origin-grid {
     display: grid;
-    grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+    grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);   /* graph | text */
     gap: 4rem;
     align-items: start;
 }
+
+/* The interactive force-directed graph (drawn by mind.js on a canvas). */
 .evolution {
     position: sticky; top: 90px;
     border: 1px solid var(--border);
@@ -313,7 +367,6 @@ main, .nav, .footer { position: relative; z-index: 1; }
     padding-left: 0.4rem;
     font-family: var(--font-mono);
 }
-/* interactive force-directed graph */
 .evo-wrap {
     position: relative;
     width: 100%;
@@ -327,6 +380,7 @@ main, .nav, .footer { position: relative; z-index: 1; }
     letter-spacing: 0.12em; text-transform: uppercase;
     pointer-events: none;
 }
+/* The floating detail card shown when you hover/drag a node. */
 .net-detail {
     position: absolute; top: 0; left: 0;
     width: 210px; max-width: 70%;
@@ -344,10 +398,12 @@ main, .nav, .footer { position: relative; z-index: 1; }
 .net-title { font-family: var(--font-display); font-weight: 700; font-size: 1rem; margin: 0.2rem 0 0.3rem; }
 .net-desc { font-size: 0.74rem; color: var(--text-2); line-height: 1.5; }
 
+/* The paragraphs beside the graph. */
 .origin-text p { color: var(--text-2); margin-bottom: 1.4rem; max-width: 58ch; }
 .origin-text strong { color: var(--text); font-weight: 600; }
-.hl { color: var(--lime); font-weight: 600; }
+.hl { color: var(--lime); font-weight: 600; }     /* lime highlight word */
 
+/* The four stat boxes (projects built, publications, …). */
 .origin-stats {
     margin-top: 2.4rem;
     display: grid; grid-template-columns: repeat(4, minmax(100px, 1fr));
@@ -361,10 +417,18 @@ main, .nav, .footer { position: relative; z-index: 1; }
     margin: 0;
 }
 
-/* ─── Exhibit visuals (archive case studies) ─── */
+
+/* ============================================================
+   8. PROJECT VISUALS
+   The little technical drawings, shared by the Selected Work
+   preview (home) and the archive case studies (projects page).
+   Each has a "show" (showcase) layer and an "eng" (engineering)
+   layer; adding the .eng-on class flips between them.
+   ============================================================ */
+
 .exhibit {
     display: grid;
-    grid-template-columns: minmax(0, 11fr) minmax(0, 9fr);
+    grid-template-columns: minmax(0, 11fr) minmax(0, 9fr);   /* visual | spec sheet */
     gap: 2.8rem;
     align-items: center;
 }
@@ -383,7 +447,7 @@ main, .nav, .footer { position: relative; z-index: 1; }
     filter: grayscale(0.2) contrast(1.04) brightness(0.92);
     transition: filter 0.5s var(--ease);
 }
-.eng-on .ex-photo { filter: grayscale(0.9) contrast(1.05) brightness(0.35); }
+.eng-on .ex-photo { filter: grayscale(0.9) contrast(1.05) brightness(0.35); }   /* dim in engineering view */
 .ex-video {
     position: absolute; inset: 0;
     width: 100%; height: 100%;
@@ -395,7 +459,7 @@ main, .nav, .footer { position: relative; z-index: 1; }
 }
 .ex-video[hidden] { display: none; }
 .eng-on .ex-video { filter: grayscale(0.95) contrast(1.08) brightness(0.32); }
-.ex-stage { position: absolute; inset: 0; width: 100%; height: 100%; }
+.ex-stage { position: absolute; inset: 0; width: 100%; height: 100%; }   /* the SVG drawing */
 .ex-index {
     position: absolute; top: 0.85rem; left: 1rem;
     font-size: 0.62rem; color: var(--text-3);
@@ -415,11 +479,13 @@ main, .nav, .footer { position: relative; z-index: 1; }
 .ex-toggle:hover { border-color: var(--lime); color: var(--lime); }
 .eng-on .ex-toggle { border-color: var(--lime); color: var(--lime); background: rgba(4, 4, 5, 0.85); }
 
-/* dual state: showcase recedes, engineering draws itself in */
+/* Dual state: the showcase fades back, the engineering blueprint draws in. */
 .ex-stage .show > * { transition: opacity 0.5s var(--ease); }
 .eng-on .ex-stage .show > * { opacity: 0.16; }
 .ex-stage .eng { opacity: 0; transition: opacity 0.35s var(--ease); }
 .eng-on .ex-stage .eng { opacity: 1; }
+
+/* Engineering-view pieces (the blueprint grid, boxes, labels, lines). */
 .eng-bp { stroke: rgba(198, 241, 53, 0.06); fill: none; stroke-width: 1; }
 .eng-box rect {
     fill: rgba(4, 4, 5, 0.72);
@@ -432,20 +498,26 @@ main, .nav, .footer { position: relative; z-index: 1; }
 .ex-sublabel { font-family: var(--font-mono); font-size: 10px; fill: var(--text-3); letter-spacing: 1px; }
 .es-feature { stroke: rgba(158, 162, 178, 0.4); stroke-width: 1; fill: none; }
 
+/* "draw" = a line that animates itself in; "pop" = something that fades in.
+   The --d custom property (set per-element in mind.js) staggers the delay. */
 .eng .draw { stroke-dasharray: 1; stroke-dashoffset: 1; transition: stroke-dashoffset 0.7s var(--ease) var(--d, 0s); }
 .eng-on .eng .draw { stroke-dashoffset: 0; }
 .eng .pop { opacity: 0; transition: opacity 0.45s ease var(--d, 0s); }
 .eng-on .eng .pop { opacity: 1; }
 
-/* spec sheet */
-.ex-spec { min-width: 0; }
-.ex-mission {
-    font-family: var(--font-display); font-weight: 700;
-    font-size: clamp(1.3rem, 2.4vw, 1.8rem);
-    line-height: 1.2; letter-spacing: -0.01em;
-    margin-bottom: 0.9rem;
-    text-wrap: balance;
+/* Showcase-art line styles (reused across the different project drawings). */
+.es-dash {
+    fill: none; stroke: var(--text-3); stroke-width: 1;
+    stroke-dasharray: 4 6;
+    animation: dash-flow 14s linear infinite;
 }
+.es-joint { fill: var(--bg); stroke: var(--lime); stroke-width: 1.2; }
+.es-soft { stroke: var(--border-bright); fill: none; stroke-width: 1; }
+.es-chain { fill: none; stroke: var(--text-3); stroke-width: 1.4; stroke-linecap: round; }
+.es-waypoint { fill: var(--bg); stroke: rgba(198, 241, 53, 0.5); stroke-width: 1; }
+
+/* The spec sheet beside each archive visual. */
+.ex-spec { min-width: 0; }
 .ex-name {
     font-family: var(--font-mono); font-weight: 400;
     font-size: 0.76rem; color: var(--lime);
@@ -472,55 +544,15 @@ main, .nav, .footer { position: relative; z-index: 1; }
 }
 .ex-link:hover { border-bottom-color: var(--lime); }
 
-.es-pulse {
-    fill: none; stroke: var(--lime); stroke-width: 1;
-    transform-box: fill-box; transform-origin: center;
-    animation: sonar 4s linear infinite;
-    opacity: 0;
-}
-.es-pulse.p2 { animation-delay: 1.33s; }
-.es-pulse.p3 { animation-delay: 2.66s; }
-@keyframes sonar {
-    0% { transform: scale(0.25); opacity: 0.5; }
-    80% { transform: scale(1); opacity: 0; }
-    100% { opacity: 0; }
-}
-.es-dash {
-    fill: none; stroke: var(--text-3); stroke-width: 1;
-    stroke-dasharray: 4 6;
-    animation: dash-flow 14s linear infinite;
-}
-@keyframes dash-flow { to { stroke-dashoffset: -200; } }
-.es-joint { fill: var(--bg); stroke: var(--lime); stroke-width: 1.2; }
-.es-soft { stroke: var(--border-bright); fill: none; stroke-width: 1; }
-.es-chain { fill: none; stroke: var(--text-3); stroke-width: 1.4; stroke-linecap: round; }
-.es-waypoint { fill: var(--bg); stroke: rgba(198, 241, 53, 0.5); stroke-width: 1; }
-.es-contour {
-    fill: none; stroke: var(--border-bright); stroke-width: 1;
-    stroke-dasharray: 6 5;
-    animation: dash-flow 26s linear infinite;
-}
-.es-flow {
-    stroke: rgba(158, 162, 178, 0.45); stroke-width: 1;
-    stroke-dasharray: 30;
-    stroke-dashoffset: 30;
-    animation: flow-streak 3.2s ease-in-out infinite;
-}
-@keyframes flow-streak {
-    0% { stroke-dashoffset: 30; opacity: 0; }
-    35% { opacity: 1; }
-    70%, 100% { stroke-dashoffset: 0; opacity: 0; }
-}
-.es-microtext {
-    font-family: var(--font-mono); font-size: 9px;
-    letter-spacing: 1px;
-    fill: var(--text-3);
-}
 
-/* ─── Selected Work — the exhibition ─── */
+/* ============================================================
+   9. SELECTED WORK (home page exhibition)
+   List of projects on the left, a big live preview on the right.
+   ============================================================ */
+
 .sw-layout {
     display: grid;
-    grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
+    grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);   /* list | preview */
     gap: 2.6rem;
     align-items: start;
 }
@@ -561,9 +593,8 @@ main, .nav, .footer { position: relative; z-index: 1; }
     overflow: hidden;
 }
 .sw-stage-wrap .ex-stage { position: absolute; inset: 0; width: 100%; height: 100%; }
-.sw-stage-wrap.swap .ex-stage { animation: sw-in 0.45s var(--ease); }
-@keyframes sw-in { from { opacity: 0; } to { opacity: 1; } }
-/* the preview keeps the showcase present beneath the architecture */
+.sw-stage-wrap.swap .ex-stage { animation: sw-in 0.45s var(--ease); }   /* fade-in when switching */
+/* In the preview the showcase stays partly visible under the blueprint. */
 .sw-stage-wrap.eng-on .ex-stage .show > * { opacity: 0.45; }
 .sw-stage-wrap.eng-on .ex-photo { filter: grayscale(0.75) contrast(1.05) brightness(0.45); }
 .sw-stage-wrap.eng-on .ex-video { filter: grayscale(0.85) contrast(1.06) brightness(0.4); }
@@ -589,7 +620,11 @@ main, .nav, .footer { position: relative; z-index: 1; }
 }
 .sw-archive:hover { color: var(--lime); border-color: var(--lime); }
 
-/* ─── Engineering archive — case studies ─── */
+
+/* ============================================================
+   10. ENGINEERING ARCHIVE (projects page case studies)
+   ============================================================ */
+
 .archive {
     max-width: var(--max-w);
     margin: 0 auto;
@@ -624,7 +659,11 @@ main, .nav, .footer { position: relative; z-index: 1; }
 }
 .case-block p { color: var(--text-2); font-size: 0.92rem; }
 
-/* ─── Resume page ─── */
+
+/* ============================================================
+   11. RESUME / DOSSIER PAGE
+   ============================================================ */
+
 .dd-stamp { font-size: 0.62rem; color: var(--lime); letter-spacing: 0.2em; }
 .resume-dl { display: inline-block; margin-top: 1.8rem; cursor: pointer; }
 .dossier-page {
@@ -676,22 +715,21 @@ main, .nav, .footer { position: relative; z-index: 1; }
 }
 .dp-skills dt { color: var(--text-3); font-size: 0.62rem; letter-spacing: 0.14em; text-transform: uppercase; padding-top: 0.25em; }
 .dp-skills dd { color: var(--text-2); margin: 0; }
-.dp-projects ul { list-style: none; }
-.dp-projects li { padding: 0.45rem 0; border-bottom: 1px solid var(--border); color: var(--text-2); font-size: 0.9rem; }
-.dp-projects strong { color: var(--text); font-weight: 600; }
-.dp-archive-note { margin-top: 1rem; font-size: 0.68rem; color: var(--text-3); }
-.dp-archive-note a { color: var(--lime); }
 
-/* ─── Capabilities ─── */
+
+/* ============================================================
+   12. SKILLS (capability map)
+   ============================================================ */
+
 .cap-map { position: relative; }
-.cap-wires {
+.cap-wires {                       /* SVG layer holding the curved wires */
     position: absolute; inset: 0;
     width: 100%; height: 100%;
     pointer-events: none;
     overflow: visible;
 }
 .cap-wire { stroke: var(--border-bright); stroke-width: 1; fill: none; opacity: 0; transition: opacity 0.9s ease 0.4s; }
-.cap-map.wired .cap-wire { opacity: 0.7; }
+.cap-map.wired .cap-wire { opacity: 0.7; }   /* fade the wires in once drawn */
 .cap-core {
     position: relative;
     width: fit-content;
@@ -752,7 +790,11 @@ main, .nav, .footer { position: relative; z-index: 1; }
     transform: translateY(-1px);
 }
 
-/* ─── Research ─── */
+
+/* ============================================================
+   13. RESEARCH
+   ============================================================ */
+
 .research-list { display: flex; flex-direction: column; }
 .study {
     display: grid;
@@ -788,7 +830,11 @@ main, .nav, .footer { position: relative; z-index: 1; }
 }
 .study:hover .study-cta { color: var(--lime); }
 
-/* ─── Experience tabs ─── */
+
+/* ============================================================
+   14. EXPERIENCE (tabs + timeline)
+   ============================================================ */
+
 .tab-bar { display: flex; gap: 0.6rem; margin-bottom: 2.6rem; }
 .tab-btn {
     appearance: none; background: none;
@@ -811,7 +857,7 @@ main, .nav, .footer { position: relative; z-index: 1; }
     padding-top: 1.2rem;
 }
 
-/* ─── Growth ─── */
+/* The vertical timeline with the lime rail that fills on scroll. */
 .growth {
     position: relative;
     padding-left: 3rem;
@@ -826,7 +872,7 @@ main, .nav, .footer { position: relative; z-index: 1; }
     position: absolute; inset: 0;
     background: linear-gradient(180deg, var(--lime), var(--lime-glow));
     transform-origin: top;
-    transform: scaleY(0);
+    transform: scaleY(0);          /* mind.js grows this from 0 → 1 on scroll */
     will-change: transform;
 }
 .gevent { position: relative; padding-bottom: 4rem; }
@@ -840,7 +886,7 @@ main, .nav, .footer { position: relative; z-index: 1; }
     transition: border-color 0.4s, box-shadow 0.4s;
 }
 .gevent.vis .gevent-node { border-color: var(--lime); box-shadow: 0 0 14px var(--lime-glow); }
-.gevent-node-live::after {
+.gevent-node-live::after {           /* pulsing ring on "current" roles */
     content: ''; position: absolute; inset: -1.5px;
     border-radius: 50%;
     border: 1.5px solid var(--lime);
@@ -863,7 +909,11 @@ main, .nav, .footer { position: relative; z-index: 1; }
 }
 .gevent-caps span:hover { color: var(--lime); border-color: var(--lime); }
 
-/* ─── Signal (contact) ─── */
+
+/* ============================================================
+   15. CONTACT
+   ============================================================ */
+
 .signal { padding-bottom: 6rem; }
 .signal-statement {
     font-family: var(--font-display); font-weight: 800;
@@ -891,7 +941,11 @@ main, .nav, .footer { position: relative; z-index: 1; }
 }
 .signal-link:hover .sl-proto { color: var(--lime); }
 
-/* ─── Footer ─── */
+
+/* ============================================================
+   16. FOOTER
+   ============================================================ */
+
 .footer { border-top: 1px solid var(--border); }
 .footer-inner {
     max-width: var(--max-w);
@@ -901,7 +955,13 @@ main, .nav, .footer { position: relative; z-index: 1; }
     font-size: 0.66rem; color: var(--text-3); letter-spacing: 0.1em;
 }
 
-/* ─── Reveal system ─── */
+
+/* ============================================================
+   17. REVEAL-ON-SCROLL SYSTEM
+   Elements with .rv start hidden and slide up when mind.js adds
+   .vis. The .rv-dN classes stagger the delay.
+   ============================================================ */
+
 .rv {
     opacity: 0;
     transform: translateY(26px);
@@ -915,7 +975,11 @@ main, .nav, .footer { position: relative; z-index: 1; }
 .rv-d5 { transition-delay: 0.5s; }
 .rv-d6 { transition-delay: 0.66s; }
 
-/* ─── Systems index page (projects.html) ─── */
+
+/* ============================================================
+   18. SUB-PAGE HEADER (projects + resume pages)
+   ============================================================ */
+
 .page-hero {
     max-width: var(--max-w); margin: 0 auto;
     padding: 9.5rem 1.5rem 1rem;
@@ -934,87 +998,35 @@ main, .nav, .footer { position: relative; z-index: 1; }
 .page-title .em { color: var(--lime); }
 .page-desc { color: var(--text-2); max-width: 56ch; }
 
-.filters {
-    max-width: var(--max-w); margin: 0 auto;
-    padding: 2.2rem 1.5rem 0.5rem;
-    display: flex; flex-wrap: wrap; align-items: center; gap: 0.6rem;
-}
-.fbtn {
-    appearance: none; background: none;
-    border: 1px solid var(--border-bright);
-    color: var(--text-2);
-    font-family: var(--font-mono); font-size: 0.7rem;
-    padding: 0.4rem 0.95rem;
-    cursor: pointer; letter-spacing: 0.04em;
-    transition: all 0.2s;
-}
-.fbtn:hover { color: var(--text); border-color: var(--text-3); }
-.fbtn.on { background: var(--lime); border-color: var(--lime); color: var(--bg); font-weight: 700; }
-.filter-count { margin-left: auto; font-family: var(--font-mono); font-size: 0.68rem; color: var(--text-3); }
 
-.sys-index {
-    max-width: var(--max-w);
-    margin: 0 auto;
-    padding: 1.5rem 1.5rem 5rem;
-    display: flex; flex-direction: column;
-}
-.sys-row {
-    display: grid;
-    grid-template-columns: 60px minmax(0, 5fr) minmax(0, 6fr) 130px;
-    gap: 1.8rem;
-    align-items: start;
-    padding: 1.9rem 0.8rem;
-    border-bottom: 1px solid var(--border);
-    text-decoration: none; color: inherit;
-    transition: background 0.25s, border-color 0.25s;
-}
-.sys-row:first-of-type { border-top: 1px solid var(--border); }
-.sys-row:hover { background: rgba(198, 241, 53, 0.035); border-bottom-color: var(--border-bright); }
-.sys-row.hidden { display: none; }
-.sys-idx { font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-3); padding-top: 0.4rem; }
-.sys-row:hover .sys-idx { color: var(--lime); }
-.sys-name {
-    display: block;
-    font-family: var(--font-display); font-weight: 700;
-    font-size: 1.3rem; line-height: 1.25;
-}
-.sys-role { display: block; font-family: var(--font-mono); font-size: 0.66rem; color: var(--text-3); letter-spacing: 0.1em; text-transform: uppercase; margin-top: 0.45rem; }
-.sys-desc { display: block; color: var(--text-2); font-size: 0.92rem; }
-.sys-stack { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.8rem; }
-.sys-stack span {
-    font-family: var(--font-mono); font-size: 0.64rem;
-    color: var(--text-3);
-    border: 1px solid var(--border);
-    padding: 0.16rem 0.5rem;
-}
-.sys-status {
-    font-family: var(--font-mono); font-size: 0.62rem;
-    letter-spacing: 0.14em; text-transform: uppercase;
-    color: var(--text-3); text-align: right;
-    padding-top: 0.45rem;
-}
-.sys-status .live { color: var(--lime); }
-.sys-cta {
-    display: block; margin-top: 0.9rem; text-align: right;
-    font-family: var(--font-mono); font-size: 0.66rem;
-    color: var(--text-3); letter-spacing: 0.04em;
-    transition: color 0.2s;
-}
-.sys-row:hover .sys-cta { color: var(--lime); }
-.sys-thumb {
-    display: block;
-    width: 100%; max-width: 300px; height: auto;
-    margin-top: 0.9rem;
-    border: 1px solid var(--border-bright);
-    filter: grayscale(0.15) contrast(1.02);
-}
-.no-results {
-    display: none;
-    padding: 3rem 0.8rem; color: var(--text-3); font-family: var(--font-mono); font-size: 0.8rem;
-}
-.no-results.show { display: block; }
+/* ============================================================
+   19. ANIMATIONS (@keyframes used across the file)
+   ============================================================ */
 
-/* ─── Responsive ─── */
+/* Soft pulsing — brand dot, status dot, "current role" ring. */
+@keyframes pulse {
+    0%, 100% { opacity: 1; box-shadow: 0 0 0 0 var(--lime-glow); }
+    50% { opacity: 0.55; box-shadow: 0 0 0 6px transparent; }
+}
+
+/* The lime streak sweeping along the hero's scroll cue line. */
+@keyframes cue-sweep {
+    0% { transform: translateX(-100%); }
+    55%, 100% { transform: translateX(105%); }
+}
+
+/* Slow marching dashes on the project showcase lines (.es-dash). */
+@keyframes dash-flow { to { stroke-dashoffset: -200; } }
+
+/* Fade used when the Selected Work preview switches projects. */
+@keyframes sw-in { from { opacity: 0; } to { opacity: 1; } }
+
+
+/* ============================================================
+   20. RESPONSIVE
+   ============================================================ */
+
+/* Tablet and below: collapse the two-column layouts to one column. */
 @media (max-width: 1020px) {
     .origin-grid { grid-template-columns: 1fr; gap: 3rem; }
     .evolution { position: static; max-width: 600px; }
@@ -1027,6 +1039,7 @@ main, .nav, .footer { position: relative; z-index: 1; }
     .origin-stats { grid-template-columns: repeat(2, minmax(100px, 1fr)); }
 }
 
+/* Phones. */
 @media (max-width: 720px) {
     body { font-size: 1rem; }
     .nav-links { gap: 1rem; }
@@ -1043,11 +1056,7 @@ main, .nav, .footer { position: relative; z-index: 1; }
     .cap-grid { grid-template-columns: 1fr; }
     .growth { padding-left: 2.2rem; }
     .gevent-node { left: calc(-2.2rem + 5px); }
-    .origin-meta { gap: 1.6rem; }
     .origin-stats { grid-template-columns: repeat(2, 1fr); gap: 1rem 1.4rem; }
-    .sys-row { grid-template-columns: 1fr; gap: 0.7rem; padding: 1.6rem 0.4rem; }
-    .sys-status { text-align: left; padding-top: 0; }
-    .sys-cta { text-align: left; margin-top: 0.4rem; }
     .study { grid-template-columns: 1fr; gap: 0.6rem; padding: 1.5rem 0.4rem; }
     .study-cta { text-align: left; padding-top: 0; }
     .ex-visual { aspect-ratio: 4 / 3; }
@@ -1056,7 +1065,13 @@ main, .nav, .footer { position: relative; z-index: 1; }
     .ex-table > div { grid-template-columns: 76px 1fr; gap: 0.8rem; }
 }
 
-/* ─── Reduced motion ─── */
+
+/* ============================================================
+   21. REDUCED MOTION
+   For visitors who asked their OS to minimise animation: cut all
+   motion and just show the final state of each effect.
+   ============================================================ */
+
 @media (prefers-reduced-motion: reduce) {
     html { scroll-behavior: auto; }
     *, *::before, *::after {
@@ -1071,7 +1086,12 @@ main, .nav, .footer { position: relative; z-index: 1; }
     .eng .pop { opacity: 1; }
 }
 
-/* ─── Print (resume → Save as PDF) ─── */
+
+/* ============================================================
+   22. PRINT (resume → Save as PDF)
+   Strip the dark theme and chrome so the resume prints clean.
+   ============================================================ */
+
 @media print {
     #field, .nav, .footer, .back-link, .resume-dl, .skip-link { display: none !important; }
     body { background: #fff; color: #111; }
@@ -1084,6 +1104,6 @@ main, .nav, .footer { position: relative; z-index: 1; }
     }
     .dossier-page *, .dp-contact a, .dp-skills dd, .dp-section p { color: #111 !important; }
     .dp-label, .dd-stamp, .dp-org, .dp-entry-head span, .dp-skills dt { color: #444 !important; }
-    .dd-lines li, .dp-skills div, .dp-projects li { border-color: #ddd !important; }
+    .dp-skills div { border-color: #ddd !important; }
     .dp-head { border-color: #bbb !important; }
 }

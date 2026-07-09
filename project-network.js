@@ -1,8 +1,3 @@
-/* ═══════════════════════════════════════════════
-   PROJECT NETWORK — force-directed graph for Eshaan's projects
-   Drag nodes · hover for details · click to open · springy water physics
-   Adapted from rahulbk.com constellation, dark theme + Eshaan's data
-   ═══════════════════════════════════════════════ */
 (function () {
     const canvas = document.getElementById('project-network');
     if (!canvas) return;
